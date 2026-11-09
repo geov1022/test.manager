@@ -1,0 +1,2594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Individual Mathematics Intervention Plan (IMIP)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- HTML2PDF.js for direct PDF downloading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- SheetJS for Excel Import -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        skybg: '#E2EEF9',
+                        navycard: '#2D3B6A',
+                        navydark: '#1E2A4A',
+                        sunnyyellow: '#FBBF24',
+                        warmcoral: '#FB7185',
+                        softrose: '#FFE4E6',
+                        softcyan: '#CFFAFE',
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #E2EEF9; }
+        
+        /* Modern Flat-Vector UI Card Styling */
+        .vector-card {
+            background-color: #FFFFFF;
+            border-radius: 1.25rem;
+            border: 2px solid #D0E1F3;
+            box-shadow: 0 10px 25px -5px rgba(30, 42, 74, 0.05);
+        }
+        .vector-card-header {
+            background-color: #2D3B6A;
+            color: #FFFFFF;
+            border-top-left-radius: 1.15rem;
+            border-top-right-radius: 1.15rem;
+        }
+
+        /* Desktop Vector Foliage Backgrounds */
+        .bg-foliage-left {
+            background-image: radial-gradient(circle at 10% 90%, #A7F3D0 0%, transparent 40%), radial-gradient(circle at 5% 50%, #6EE7B7 0%, transparent 35%);
+        }
+        .bg-foliage-right {
+            background-image: radial-gradient(circle at 90% 90%, #A7F3D0 0%, transparent 40%), radial-gradient(circle at 95% 50%, #34D399 0%, transparent 35%);
+        }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-full-width { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            body { background: white !important; color: black !important; font-size: 11pt; }
+            .card-box { border: 1px solid #cbd5e1 !important; shadow: none !important; }
+            @page { margin: 1.2cm; size: portrait; }
+        }
+    </style>
+</head>
+<body class="bg-skybg text-slate-800 min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- Playful Background Decorative Shapes (Matching Screen Graphic) -->
+    <div class="fixed top-12 left-4 w-16 h-16 bg-amber-300 rounded-full blur-xl opacity-40 pointer-events-none"></div>
+    <div class="fixed bottom-10 right-8 w-24 h-24 bg-rose-300 rounded-full blur-2xl opacity-40 pointer-events-none"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-navycard text-white shadow-md sticky top-0 z-30 no-print border-b-4 border-slate-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- ARAL Logo + Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white px-2.5 py-1 rounded-lg shadow-sm mr-1 flex flex-col items-center justify-center select-none border border-slate-200 h-11">
+                        <div class="font-black text-xl tracking-tight leading-none">
+                            <span class="text-red-600">A</span><span class="text-blue-900">R</span><span class="text-amber-400">A</span><span class="text-blue-900">L</span>
+                        </div>
+                        <div class="font-bold text-[8px] tracking-widest text-slate-700 leading-none mt-0.5">
+                            PROGRAM
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-white text-lg tracking-wide leading-tight flex items-center gap-2">
+                            IMIP Manager
+                        </h1>
+                        <p class="text-[11px] text-cyan-200">Individual Mathematics Intervention Plan & Progress Tracker</p>
+                    </div>
+                </div>
+
+                <!-- Navigation & Action Controls -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleMainView('dashboard')" id="navBtnDashboard" class="px-3.5 py-2 text-xs font-bold rounded-xl text-cyan-100 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-2 border border-transparent">
+                        <i class="fa-solid fa-chart-pie text-sunnyyellow"></i> Analytics Dashboard
+                    </button>
+                    <button onclick="toggleMainView('plan')" id="navBtnPlan" class="px-3.5 py-2 text-xs font-bold rounded-xl text-slate-900 bg-sunnyyellow hover:bg-amber-400 transition flex items-center gap-2 shadow border border-amber-500">
+                        <i class="fa-solid fa-file-contract"></i> Learner Plan
+                    </button>
+
+                    <!-- Download IMIP Dropdown Menu -->
+                    <div class="relative inline-block text-left" id="downloadMenuContainer">
+                        <button onclick="toggleDownloadMenu(event)" class="px-3.5 py-2 text-xs font-bold bg-slate-700/70 text-cyan-100 hover:bg-slate-700 rounded-xl transition flex items-center gap-2 border border-slate-600">
+                            <i class="fa-solid fa-download text-cyan-300"></i> Download IMIP <i class="fa-solid fa-chevron-down text-[10px] text-slate-300"></i>
+                        </button>
+                        <div id="downloadDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white text-slate-800 rounded-2xl shadow-xl border-2 border-slate-200 z-50 py-1.5 text-xs font-semibold overflow-hidden">
+                            <button onclick="downloadIMIPasPDF(); closeDownloadMenu();" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-file-pdf text-rose-500 text-sm"></i> Save as PDF
+                            </button>
+                            <button onclick="downloadIMIPasCSV(); closeDownloadMenu();" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 text-slate-700 flex items-center gap-2 border-t border-slate-100">
+                                <i class="fa-solid fa-file-csv text-emerald-500 text-sm"></i> Save as CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="h-4 w-px bg-slate-600 mx-1"></div>
+                    <button onclick="printIMIPPlan()" class="px-3.5 py-2 text-xs font-bold border-2 border-slate-500 text-cyan-100 rounded-xl hover:bg-slate-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-print text-cyan-300"></i> <span id="printBtnText">Print Plan</span>
+                    </button>
+
+                    <!-- New iOS Traffic Light Menu for School Details -->
+                    <div class="h-4 w-px bg-slate-600 mx-1"></div>
+                    <div onclick="openSchoolModal()" class="flex items-center space-x-1.5 cursor-pointer hover:bg-slate-700 p-2 rounded-xl transition border border-transparent hover:border-slate-600" title="School Details">
+                        <div class="w-3 h-3 rounded-full bg-rose-500 shadow-sm"></div>
+                        <div class="w-3 h-3 rounded-full bg-amber-400 shadow-sm"></div>
+                        <div class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container with Decorative Vector Side Potted Plants -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-6 print-full-width relative">
+        
+        <!-- Potted Plant Decoration (Left) -->
+        <div class="hidden xl:flex flex-col items-center absolute -left-16 bottom-8 pointer-events-none opacity-80">
+            <div class="w-12 h-16 bg-emerald-400 rounded-full border-2 border-emerald-600 -mb-6 transform -rotate-12"></div>
+            <div class="w-14 h-20 bg-teal-500 rounded-full border-2 border-teal-700 -mb-8"></div>
+            <div class="w-16 h-12 bg-amber-500 rounded-t-xl border-2 border-amber-700 shadow-md"></div>
+        </div>
+
+        <!-- Sidebar: Learner Selection & Actions -->
+        <aside class="lg:col-span-3 space-y-4 no-print">
+            <!-- Add Learner Button -->
+            <button onclick="openNewPlanModal()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-extrabold py-3 px-4 rounded-2xl shadow-md transition border-b-4 border-cyan-700 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-plus text-sm"></i> New Learner Intervention Plan
+            </button>
+
+            <!-- Learner List Box -->
+            <div class="vector-card p-4 space-y-3">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-2.5">
+                    <h2 class="font-black text-slate-800 text-xs uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-users text-cyan-600"></i> Active Learners (<span id="learnerCount">0</span>)
+                    </h2>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                    <input type="text" id="searchInput" onkeyup="filterLearners()" placeholder="Search learner name..." class="w-full pl-9 pr-3 py-2 text-xs border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:outline-none font-semibold">
+                </div>
+
+                <!-- Learner Items Container -->
+                <div id="learnerListContainer" class="space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
+                    <!-- Dynamic learner buttons inserted here -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Display View Area -->
+        <main class="lg:col-span-9 print-full-width">
+
+            <!-- Global School Details Card -->
+            <div id="globalSchoolCard" class="hidden vector-card p-5 mb-6 bg-white border-l-4 border-l-cyan-500 shadow-sm relative overflow-hidden">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-100 to-cyan-50 flex items-center justify-center text-cyan-600 border border-cyan-200 shadow-sm">
+                            <i class="fa-solid fa-school text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-black text-slate-800 text-xl uppercase tracking-tight" id="displaySchoolName">--</h2>
+                            <div class="text-xs font-bold text-slate-600 flex flex-wrap items-center gap-2 mt-1">
+                                <span class="bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200 shadow-sm"><i class="fa-solid fa-id-badge text-cyan-600 mr-1.5"></i> <span id="displaySchoolId">--</span></span>
+                                <span class="bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200 shadow-sm"><i class="fa-solid fa-map-location-dot text-rose-500 mr-1.5"></i> <span id="displaySchoolAddress">--</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="openSchoolModal()" class="no-print text-xs font-bold text-slate-600 hover:text-cyan-700 bg-slate-100 hover:bg-cyan-50 px-3.5 py-2 rounded-xl transition border border-slate-200 shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit Details
+                    </button>
+                </div>
+                <!-- Decorative background shape -->
+                <div class="absolute right-0 top-0 w-48 h-full bg-gradient-to-l from-cyan-50 to-transparent opacity-70 pointer-events-none print:hidden"></div>
+            </div>
+
+            <!-- DASHBOARD ANALYTICS VIEW -->
+            <div id="dashboardView" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="font-black text-slate-900 text-xl tracking-tight">Mathematics Intervention Dashboard</h2>
+                        <p class="text-xs text-slate-500 font-medium">Summary overview across all enrolled learners and progress tiles</p>
+                    </div>
+                    <!-- Grade Level Slicer -->
+                    <div class="flex items-center space-x-2 bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-300 shadow-inner">
+                        <label for="gradeLevelSlicer" class="text-xs font-bold text-slate-700 flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fa-solid fa-filter text-cyan-600"></i> Grade Level:
+                        </label>
+                        <select id="gradeLevelSlicer" onchange="updateDashboardStats()" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1 focus:ring-2 focus:ring-cyan-500 font-bold text-slate-800 bg-white">
+                            <option value="ALL">All Grade Levels</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Metric Cards (Styled to Match Center Monitor Tiles from Design Graphic) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 print:grid-cols-4 gap-4 print:gap-3">
+                    <!-- Total Enrolled Card (Blue Tile Header Graphic) -->
+                    <div class="bg-white p-4 print:p-3 rounded-2xl border-2 border-blue-200 shadow-sm space-y-2 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Learners</span>
+                            <span class="w-7 h-7 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-user-group"></i></span>
+                        </div>
+                        <div class="text-3xl font-black text-slate-900" id="dashTotalLearners">0</div>
+                        <div class="w-full bg-blue-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full w-3/4"></div>
+                        </div>
+                    </div>
+
+                    <!-- Active Interventions Card (Yellow Tile) -->
+                    <div class="bg-white p-4 print:p-3 rounded-2xl border-2 border-amber-200 shadow-sm space-y-2 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Active Status</span>
+                            <span class="w-7 h-7 bg-sunnyyellow text-slate-900 rounded-lg flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-spinner"></i></span>
+                        </div>
+                        <div class="text-3xl font-black text-amber-600" id="dashActiveInterventions">0</div>
+                        <div class="w-full bg-amber-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-sunnyyellow h-full w-2/3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Worksheets Completed Card (Cyan Checkmark Tile) -->
+                    <div class="bg-white p-4 print:p-3 rounded-2xl border-2 border-emerald-200 shadow-sm space-y-2 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Worksheets Done</span>
+                            <span class="w-7 h-7 bg-emerald-500 text-white rounded-lg flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-check"></i></span>
+                        </div>
+                        <div class="text-3xl font-black text-emerald-600" id="dashMasteredLearners">0</div>
+                        <div class="w-full bg-emerald-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full w-4/5"></div>
+                        </div>
+                    </div>
+
+                    <!-- Total Sessions Conducted Card (Rose Tile) -->
+                    <div class="bg-white p-4 print:p-3 rounded-2xl border-2 border-rose-200 shadow-sm space-y-2 relative overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Sessions</span>
+                            <span class="w-7 h-7 bg-rose-500 text-white rounded-lg flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-calendar-check"></i></span>
+                        </div>
+                        <div class="text-3xl font-black text-rose-600" id="dashTotalSessions">0</div>
+                        <div class="w-full bg-rose-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-rose-500 h-full w-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row (Styled in App Window Containers) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-6 print:gap-4 mt-2 print:mt-4">
+                    <div class="vector-card p-5 print:p-4 space-y-4">
+                        <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3 print:pb-2">
+                            <h3 class="font-extrabold text-slate-800 text-sm print:text-xs flex items-center gap-2">
+                                <i class="fa-solid fa-chart-column text-cyan-600"></i> Gaps by Domain
+                            </h3>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">Bar Chart</span>
+                        </div>
+                        <div class="h-64 print:h-52 relative">
+                            <canvas id="domainChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="vector-card p-5 print:p-4 space-y-4">
+                        <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3 print:pb-2">
+                            <h3 class="font-extrabold text-slate-800 text-sm print:text-xs flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-rose-500"></i> Proficiency Status Distribution
+                            </h3>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">Doughnut</span>
+                        </div>
+                        <div class="h-64 print:h-52 relative flex items-center justify-center">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INDIVIDUAL LEARNER PLAN VIEW -->
+            <div id="imipDocumentView" class="space-y-6">
+                
+                <!-- PDF / Print Header -->
+                <div id="printDocumentHeader" class="hidden print:block text-center mb-6">
+                    <h1 class="font-bold text-xl uppercase" id="printSchoolName"></h1>
+                    <p class="text-sm font-medium"><span id="printSchoolId"></span> &nbsp;|&nbsp; <span id="printSchoolAddress"></span></p>
+                    <div class="h-6"></div>
+                    <h2 class="font-black text-xl">INDIVIDUAL MATHEMATICS INTERVENTION PLAN (IMIP)</h2>
+                </div>
+
+                <!-- Header Box / Student Details (Styled as Primary Monitor Window) -->
+                <div class="vector-card p-6 card-box space-y-4 relative overflow-hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-slate-100 pb-4 gap-3">
+                        <div>
+                            <span class="text-[10px] uppercase font-black tracking-widest text-slate-900 bg-sunnyyellow px-2.5 py-1 rounded-md border border-amber-400">IMIP Learner Form</span>
+                            <h2 class="font-black text-slate-900 text-2xl tracking-tight mt-1.5" id="viewLearnerName">Select a Learner</h2>
+                            <p class="text-xs text-slate-500 font-semibold" id="viewGradeLevel">Grade Level: --</p>
+                        </div>
+                        <div class="flex items-center gap-2 no-print">
+                            <span id="viewStatusBadge" class="text-xs px-3 py-1 rounded-full font-bold bg-slate-100 text-slate-600">Select Learner</span>
+                            <button onclick="editCurrentPlan()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-bold transition border border-slate-300">
+                                <i class="fa-solid fa-user-pen mr-1"></i> Edit
+                            </button>
+                            <button onclick="deleteCurrentPlan()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 px-3.5 py-2 rounded-xl font-bold transition border border-rose-200">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs pt-1">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block font-bold text-[10px] uppercase">Tutor / Teacher Name</span>
+                            <span class="font-extrabold text-slate-800 text-sm" id="viewTutorName">--</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block font-bold text-[10px] uppercase">Grade Level</span>
+                            <span class="font-extrabold text-slate-800 text-sm" id="viewGradeLevelDetail">--</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block font-bold text-[10px] uppercase">ARAL Math Section</span>
+                            <span class="font-extrabold text-slate-800 text-sm" id="viewSectionDetail">--</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block font-bold text-[10px] uppercase">Assigned Worksheets</span>
+                            <span class="font-extrabold text-slate-800 text-sm" id="viewWorksheetCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Competency Gaps & Target Skills Section -->
+                <div class="vector-card p-6 card-box space-y-4">
+                    <div class="flex justify-between items-center border-b-2 border-slate-100 pb-3">
+                        <h3 class="font-black text-slate-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-cyan-600"></i> Competency Gaps & Target Skills
+                        </h3>
+                        <button onclick="openAddGapModal()" class="no-print bg-cyan-500 hover:bg-cyan-600 text-white text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow border-b-2 border-cyan-700">
+                            <i class="fa-solid fa-plus"></i> Add Entry / Worksheet
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse table-fixed">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 border-b-2 border-slate-200">
+                                    <th class="p-3 font-extrabold text-center w-12">Week</th>
+                                    <th class="p-3 font-extrabold w-[20%]">Worksheet / Domain</th>
+                                    <th class="p-3 font-extrabold w-[20%]">Identified Gaps</th>
+                                    <th class="p-3 font-extrabold w-[22%]">Target Skills / Competencies</th>
+                                    <th class="p-3 font-extrabold w-[38%]">Tutor Notes / Observations</th>
+                                    <th class="p-3 font-extrabold text-center w-14 no-print">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="domainGapsTbody" class="divide-y divide-slate-100">
+                                <!-- Dynamic rows loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Progress & Tutor Log Section -->
+                <div class="vector-card p-6 card-box space-y-4">
+                    <div class="flex justify-between items-center border-b-2 border-slate-100 pb-3">
+                        <h3 class="font-black text-slate-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-rose-500"></i> Intervention Session History & Tutor Logs
+                        </h3>
+                        <button onclick="openAddSessionModal()" class="no-print bg-cyan-500 hover:bg-cyan-600 text-white text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow border-b-2 border-cyan-700">
+                            <i class="fa-solid fa-plus"></i> Log Intervention Session
+                        </button>
+                    </div>
+
+                    <div id="sessionLogsList" class="space-y-3">
+                        <!-- Session logs rendered here -->
+                    </div>
+                </div>
+
+                <!-- PDF / Print Footer (Signatories) -->
+                <div id="printDocumentFooter" class="hidden print:grid mt-10 grid-cols-3 gap-8 text-sm pt-8 break-inside-avoid">
+                    <div class="flex flex-col items-center">
+                        <span class="mb-8 w-full text-left font-semibold">Prepared by:</span>
+                        <span class="font-bold uppercase border-b border-slate-800 text-center w-full pb-1" id="printTutorName"></span>
+                        <span class="text-center w-full pt-1">Tutor</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="mb-8 w-full text-left font-semibold">Reviewed by:</span>
+                        <span class="font-bold uppercase border-b border-slate-800 text-center w-full pb-1" id="printReviewerName"></span>
+                        <span class="text-center w-full pt-1" id="printReviewerTitle"></span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="mb-8 w-full text-left font-semibold">Noted by:</span>
+                        <span class="font-bold uppercase border-b border-slate-800 text-center w-full pb-1" id="printSchoolHead"></span>
+                        <span class="text-center w-full pt-1">School Head</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL: Add / Edit Learner Profile Plan -->
+    <div id="learnerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl border-4 border-slate-300 w-full max-w-md p-6 space-y-4">
+            <div class="flex justify-between items-center border-b-2 border-slate-100 pb-3">
+                <h3 class="font-black text-slate-800 text-base flex items-center gap-2" id="learnerModalTitle">
+                    <i class="fa-solid fa-user-gear text-cyan-600"></i> Create Learner Intervention Plan
+                </h3>
+                <button onclick="closeLearnerModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="learnerForm" onsubmit="saveLearnerPlan(event)" class="space-y-3 text-xs font-medium">
+                <input type="hidden" id="editingLearnerId" value="">
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Learner's Full Name (LAST NAME, FIRST NAME MI.) *</label>
+                    <input type="text" id="inputLearnerName" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="e.g. DELA CRUZ, JUAN M.">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Grade Level *</label>
+                        <select id="inputGradeLevel" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold text-slate-700">
+                            <!-- Populated dynamically based on school classification -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">ARAL Math Section *</label>
+                        <input type="text" id="inputSection" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="e.g. Rizal">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Tutor / Teacher Name *</label>
+                    <input type="text" id="inputTutorName" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="e.g. Teacher Maria Santos">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Intervention Status *</label>
+                    <select id="inputStatus" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold text-slate-700">
+                        <option value="Ongoing">Ongoing Intervention</option>
+                        <option value="Needs Review">Needs Review</option>
+                        <option value="Mastered">Mastered / Completed</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t-2 border-slate-100">
+                    <button type="button" onclick="closeLearnerModal()" class="px-4 py-2 border-2 border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-black shadow border-b-2 border-cyan-700">Save Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Add / Edit Domain Gap Entry -->
+    <div id="gapModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl border-4 border-slate-300 w-full max-w-lg p-6 space-y-4">
+            <div class="flex justify-between items-center border-b-2 border-slate-100 pb-3">
+                <h3 class="font-black text-slate-800 text-base flex items-center gap-2" id="gapModalTitle">
+                    <i class="fa-solid fa-list-check text-cyan-600"></i> Add Domain Gap / Worksheet
+                </h3>
+                <button onclick="closeGapModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="gapForm" onsubmit="saveGapEntry(event)" class="space-y-3 text-xs font-medium">
+                <input type="hidden" id="editingGapIndex" value="-1">
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Select Worksheet Preset (ARAL Math Worksheets)</label>
+                    <select id="selectGapWorksheetPreset" onchange="handleWorksheetPresetChange()" class="w-full p-2.5 border-2 border-amber-300 rounded-xl focus:ring-2 focus:ring-cyan-500 bg-amber-50 font-bold text-amber-900">
+                        <option value="">-- Custom Entry (No Worksheet Preset) --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Domain *</label>
+                    <select id="inputGapDomain" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold text-slate-700">
+                        <option value="Number and Algebra">Number and Algebra</option>
+                        <option value="Measurement and Geometry">Measurement and Geometry</option>
+                        <option value="Data and Probability">Data and Probability</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Identified Gaps *</label>
+                    <textarea id="inputGapIdentified" rows="2" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500" placeholder="e.g. Difficulty adding integers with different signs..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Target Skills / Competencies *</label>
+                    <textarea id="inputGapTarget" rows="2" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500" placeholder="e.g. Add positive and negative integers accurately..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Tutor Notes / Observations</label>
+                    <textarea id="inputGapNotes" rows="3" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500" placeholder="Mastery observations, items completed, and next session targets..."></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t-2 border-slate-100">
+                    <button type="button" onclick="closeGapModal()" class="px-4 py-2 border-2 border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-black shadow border-b-2 border-cyan-700">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Add / Edit Session Log -->
+    <div id="sessionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl border-4 border-slate-300 w-full max-w-lg p-6 space-y-4">
+            <div class="flex justify-between items-center border-b-2 border-slate-100 pb-3">
+                <h3 class="font-black text-slate-800 text-base flex items-center gap-2" id="sessionModalTitle">
+                    <i class="fa-solid fa-clock-rotate-left text-rose-500"></i> Log Intervention Session
+                </h3>
+                <button onclick="closeSessionModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="sessionForm" onsubmit="saveSessionLog(event)" class="space-y-3 text-xs font-medium">
+                <input type="hidden" id="editingSessionIndex" value="-1">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Session Week *</label>
+                        <select id="inputSessionWeek" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-extrabold text-cyan-600">
+                            <!-- Options populated dynamically -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Duration (Mins) *</label>
+                        <input type="number" id="inputSessionDuration" required min="15" max="180" value="60" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Start Date *</label>
+                        <input type="date" id="inputSessionStartDate" required onchange="handleSessionStartDateChange()" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold text-slate-700 disabled:bg-slate-100 disabled:cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">End Date *</label>
+                        <input type="date" id="inputSessionEndDate" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold text-slate-700 disabled:bg-slate-100 disabled:cursor-not-allowed">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Start Worksheet *</label>
+                        <select id="inputSessionStartWs" required onchange="handleStartWsChange()" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold text-slate-700">
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">End Worksheet *</label>
+                        <select id="inputSessionEndWs" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold text-slate-700">
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Session Notes / Observations</label>
+                    <textarea id="inputSessionNotes" rows="3" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500" placeholder="Notes on student progress, difficulty encountered, and mastery..."></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t-2 border-slate-100">
+                    <button type="button" onclick="closeSessionModal()" class="px-4 py-2 border-2 border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-black shadow border-b-2 border-cyan-700">Save Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Custom Message Box (Vector Popup Card) -->
+    <div id="messageBoxModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl border-4 border-slate-300 w-full max-w-sm p-6 space-y-4 text-center">
+            <div id="messageBoxIconContainer" class="mx-auto flex items-center justify-center h-14 w-14 rounded-2xl bg-amber-100 mb-4 shadow">
+                <i id="messageBoxIcon" class="fa-solid fa-circle-exclamation text-amber-600 text-2xl"></i>
+            </div>
+            <h3 class="font-black text-slate-900 text-lg" id="messageBoxTitle">Notice</h3>
+            <p class="text-xs font-semibold text-slate-600" id="messageBoxMessage">Message goes here.</p>
+            <div class="flex justify-center space-x-3 pt-3" id="messageBoxButtons">
+                <!-- Buttons injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit School Details -->
+    <div id="schoolModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl border-4 border-slate-300 w-full max-w-lg p-6 space-y-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center border-b-2 border-slate-100 pb-3">
+                <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-cyan-600"></i> School Details
+                </h3>
+                <button onclick="closeSchoolModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form onsubmit="saveSchoolDetails(event)" class="space-y-3 text-xs font-medium">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">School Name *</label>
+                    <input type="text" id="inputSchoolName" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="e.g. Rizal National High School">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">School ID *</label>
+                        <input type="text" id="inputSchoolId" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="e.g. 301234">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">School Head</label>
+                        <input type="text" id="inputSchoolHead" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="e.g. Dr. Juan Santos">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">School Address *</label>
+                    <input type="text" id="inputSchoolAddress" required class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="e.g. Brgy. San Jose, Antipolo City">
+                </div>
+                
+                <div class="pt-2 border-t-2 border-slate-100">
+                    <label class="block font-bold text-slate-700 mb-1">Curricular Classification *</label>
+                    <select id="inputClassification" required onchange="toggleCoordinatorFields()" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-bold text-slate-700">
+                        <option value="Elementary">Elementary</option>
+                        <option value="JHS">JHS (Junior High School)</option>
+                        <option value="Integrated Elementary and JHS">Integrated Elementary and JHS</option>
+                    </select>
+                </div>
+
+                <div id="jhsCoordContainer" class="hidden">
+                    <label class="block font-bold text-slate-700 mb-1">Mathematics Head Teacher/Coordinator (JHS)</label>
+                    <input type="text" id="inputJhsCoordinator" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="Name of Mathematics Head Teacher/Coordinator">
+                </div>
+
+                <div id="elemCoordContainer" class="hidden">
+                    <label class="block font-bold text-slate-700 mb-1">ARAL Mathematics Coordinator</label>
+                    <input type="text" id="inputElemCoordinator" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 font-semibold" placeholder="Name of Elem/Integrated Math Coordinator">
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t-2 border-slate-100">
+                    <button type="button" onclick="closeSchoolModal()" class="px-4 py-2 border-2 border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-black shadow border-b-2 border-cyan-700">Save Details</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- Official ARAL Worksheets Data Store (Grade 9 & Grade 10 Worksheets 1 to 57) ---
+        const ARAL_DATABASE = {
+            1: {
+                worksheet: 1,
+                topic: "Adding Two Positive Integers; Adding Two Positive Similar Fractions",
+                domain: "Number and Algebra",
+                gap: "Difficulty adding whole numbers and fractions; weak understanding of fraction numerators and denominators.",
+                target: "Add positive integers and similar fractions accurately; simplify answers to lowest terms.",
+                notes: "The learner can add smaller positive integers using counting strategies but becomes less accurate when working with larger numbers. In adding similar fractions, the learner can identify the numerators and denominators but needs guidance in adding the numerators while keeping the denominator unchanged."
+            },
+            2: {
+                worksheet: 2,
+                topic: "Adding Two Negative Integers; Adding Two Negative Similar Fractions",
+                domain: "Number and Algebra",
+                gap: "Difficulty understanding negative signs and determining the sign of the sum.",
+                target: "Add negative integers and negative similar fractions using appropriate sign rules.",
+                notes: "The learner can recognize negative integers but has difficulty determining the result when two negative numbers are added. In adding negative fractions, the learner needs support in understanding how the signs affect the sum and in simplifying the resulting fraction."
+            },
+            3: {
+                worksheet: 3,
+                topic: "Adding a Positive and a Negative Integer; Adding a Positive and Negative Fraction",
+                domain: "Number and Algebra",
+                gap: "Difficulty comparing absolute values and determining the sign of the resulting sum.",
+                target: "Add integers and fractions with different signs; identify the sign of the result.",
+                notes: "The learner can add integers with the same sign more confidently but struggles when a positive and a negative number are combined. The learner needs guided practice in comparing absolute values and determining the appropriate sign of the sum."
+            },
+            4: {
+                worksheet: 4,
+                topic: "Adding a Positive and a Negative Integer",
+                domain: "Number and Algebra",
+                gap: "Difficulty applying sign rules when adding integers with different signs.",
+                target: "Find the sum of positive and negative integers using number lines and absolute values.",
+                notes: "The learner can identify positive and negative integers on a number line but has difficulty applying the rules when adding integers with different signs. The learner performs better when visual representations are provided before progressing to abstract number sentences."
+            },
+            5: {
+                worksheet: 5,
+                topic: "Subtracting Two Positive Integers",
+                domain: "Number and Algebra",
+                gap: "Difficulty performing subtraction, particularly when regrouping or borrowing is required.",
+                target: "Subtract positive integers accurately and verify answers using addition.",
+                notes: "The learner can add positive integers accurately when the numbers are simple but makes errors when subtracting, particularly when regrouping or borrowing is required. The learner needs to distinguish subtraction from addition and check the difference using addition."
+            },
+            6: {
+                worksheet: 6,
+                topic: "Subtracting Two Negative Integers",
+                domain: "Number and Algebra",
+                gap: "Difficulty interpreting subtraction involving negative numbers and applying sign rules.",
+                target: "Subtract negative integers and express the resulting difference correctly.",
+                notes: "The learner recognizes negative numbers but struggles to determine the difference between two negative integers. The learner needs visual guidance using a number line and repeated examples to understand the direction and distance between the numbers."
+            },
+            7: {
+                worksheet: 7,
+                topic: "Subtracting a Positive Integer by a Negative Integer",
+                domain: "Number and Algebra",
+                gap: "Difficulty distinguishing the signs of the minuend and subtrahend.",
+                target: "Subtract a negative integer from a positive integer accurately.",
+                notes: "The learner can identify the signs of the given integers but has difficulty interpreting subtraction involving a negative number. The learner needs guided practice in rewriting subtraction as addition of the opposite before performing the operation."
+            },
+            8: {
+                worksheet: 8,
+                topic: "Subtracting a Negative Integer by a Positive Integer; Subtracting a Negative Fraction by a Positive Fraction",
+                domain: "Number and Algebra",
+                gap: "Difficulty handling negative minuends and maintaining correct signs in subtraction.",
+                target: "Subtract positive integers and fractions from negative values.",
+                notes: "The learner can subtract integers with familiar examples but struggles when the first number is negative and the second is positive. In subtracting fractions with different signs, the learner also needs assistance in finding a common denominator and determining the correct sign of the answer."
+            },
+            9: {
+                worksheet: 9,
+                topic: "Subtracting Integers",
+                domain: "Number and Algebra",
+                gap: "Inconsistent application of integer subtraction rules.",
+                target: "Solve subtraction exercises involving positive and negative integers.",
+                notes: "The learner can perform basic addition and subtraction of integers separately but becomes confused when the two operations are presented in mixed exercises. The learner needs to identify the operation first and apply the appropriate rules before calculating."
+            },
+            10: {
+                worksheet: 10,
+                topic: "Multiplying Two Positive Integers; Multiplying Two Positive Fractions",
+                domain: "Number and Algebra",
+                gap: "Difficulty recalling multiplication facts and multiplying fractions.",
+                target: "Multiply positive integers and fractions; simplify products.",
+                notes: "The learner can multiply positive integers using basic multiplication facts but has difficulty applying the same process to fractions. The learner needs practice multiplying numerators and denominators separately and simplifying the product to its lowest terms."
+            },
+            11: {
+                worksheet: 11,
+                topic: "Multiplying Two Negative Integers; Multiplying Two Negative Fractions",
+                domain: "Number and Algebra",
+                gap: "Difficulty applying the rule that the product of two negative numbers is positive.",
+                target: "Multiply two negative integers and fractions accurately.",
+                notes: "The learner can multiply positive numbers but is less confident when both factors are negative. In multiplying negative fractions, the learner needs guidance in applying the sign rules and simplifying the resulting fraction."
+            },
+            12: {
+                worksheet: 12,
+                topic: "Multiplying Two Integers with Different Signs; Multiplying Fractions with Different Signs",
+                domain: "Number and Algebra",
+                gap: "Difficulty determining the sign of products involving different signs.",
+                target: "Multiply integers and fractions with different signs and simplify results.",
+                notes: "The learner can multiply integers with the same sign but struggles when the factors have different signs. The learner needs repeated examples and sign-rule reminders to distinguish positive products from negative products."
+            },
+            13: {
+                worksheet: 13,
+                topic: "Multiplying Integers",
+                domain: "Number and Algebra",
+                gap: "Inconsistent application of multiplication sign rules and basic multiplication facts.",
+                target: "Perform multiplication involving positive and negative integers.",
+                notes: "The learner can recall basic multiplication facts but makes errors when multiplying integers with different signs. The learner needs to apply the sign rule consistently before proceeding with the numerical multiplication."
+            },
+            14: {
+                worksheet: 14,
+                topic: "Division of Two Positive Integers; Division of Two Negative Integers",
+                domain: "Number and Algebra",
+                gap: "Difficulty recalling division facts and applying sign rules in division.",
+                target: "Divide integers with similar signs and verify answers using multiplication.",
+                notes: "The learner can divide positive integers when the quotient is a whole number but struggles when dividing two negative integers. The learner needs to understand that dividing numbers with the same sign produces a positive quotient and to check answers through multiplication."
+            },
+            15: {
+                worksheet: 15,
+                topic: "Division of Two Integers with Different Signs",
+                domain: "Number and Algebra",
+                gap: "Difficulty determining the sign of the quotient when integers have different signs.",
+                target: "Divide integers with different signs accurately.",
+                notes: "The learner can perform basic division but has difficulty determining the sign of the quotient when the dividend and divisor have different signs. The learner needs guided practice in applying the sign rules before completing the division."
+            },
+            16: {
+                worksheet: 16,
+                topic: "Dividing Integers",
+                domain: "Number and Algebra",
+                gap: "Difficulty independently applying division rules to integers.",
+                target: "Perform division involving positive and negative integers.",
+                notes: "The learner can perform multiplication and division of integers separately but becomes confused when both operations appear in the same set of exercises. The learner needs to identify the operation and apply the appropriate sign rule before solving."
+            },
+            17: {
+                worksheet: 17,
+                topic: "Performing Series of Operations Involving Fractions and Integers",
+                domain: "Number and Algebra",
+                gap: "Difficulty combining operations involving integers and fractions; weak fraction computation skills.",
+                target: "Perform multiple operations involving integers and fractions using correct procedures.",
+                notes: "The learner can perform basic operations involving fractions and integers individually but struggles when several operations are combined in one expression. The learner needs guided practice in following the correct order of operations and maintaining accuracy in each step."
+            },
+            18: {
+                worksheet: 18,
+                topic: "Multiplying Decimals and Fractions",
+                domain: "Number and Algebra",
+                gap: "Difficulty converting between decimals and fractions and determining decimal placement.",
+                target: "Multiply decimals and fractions accurately; express answers in appropriate forms.",
+                notes: "The learner can multiply whole numbers and decimals but has difficulty determining the placement of the decimal point in the product. When multiplying fractions and decimals, the learner needs support in converting numbers into appropriate forms and simplifying the result."
+            },
+            19: {
+                worksheet: 19,
+                topic: "Dividing Decimals and Fractions",
+                domain: "Number and Algebra",
+                gap: "Difficulty dividing fractions and decimals; confusion in converting and manipulating numbers.",
+                target: "Divide decimals and fractions using appropriate procedures.",
+                notes: "The learner can divide whole numbers but struggles when the dividend or divisor contains a decimal or fraction. The learner needs guidance in converting the numbers into compatible forms and correctly placing the decimal point in the quotient."
+            },
+            20: {
+                worksheet: 20,
+                topic: "Performing Operations Involving Three Fractions and Decimals",
+                domain: "Number and Algebra",
+                gap: "Difficulty performing multiple operations and maintaining accuracy in fraction and decimal computations.",
+                target: "Solve expressions involving three fractions and decimals.",
+                notes: "The learner can solve expressions involving two numbers but makes errors when three fractions and decimals are combined. The learner needs to identify the operations involved, follow the correct sequence, and check each intermediate result."
+            },
+            21: {
+                worksheet: 21,
+                topic: "Performing Operations Involving Three Fractions and Decimals",
+                domain: "Number and Algebra",
+                gap: "Difficulty maintaining accuracy when performing consecutive operations involving fractions and decimals.",
+                target: "Perform mixed operations involving three fractions and decimals.",
+                notes: "The learner can perform basic operations involving fractions and decimals but has difficulty maintaining accuracy across several steps. The learner needs guided practice in handling unlike forms of numbers and recording each step clearly."
+            },
+            22: {
+                worksheet: 22,
+                topic: "Performing Operations Involving Three Fractions and Decimals",
+                domain: "Number and Algebra",
+                gap: "Inconsistent application of fraction and decimal operations in multistep expressions.",
+                target: "Solve multistep expressions involving three fractions and decimals independently.",
+                notes: "The learner can identify the operations in a numerical expression but struggles to complete them in the correct order when three fractions and decimals are involved. The learner needs reminders to prioritize the required operations and avoid solving from left to right without considering precedence."
+            },
+            23: {
+                worksheet: 23,
+                topic: "Performing Operations Involving Four Fractions and Decimals",
+                domain: "Number and Algebra",
+                gap: "Difficulty managing longer expressions and maintaining accuracy across multiple steps.",
+                target: "Perform operations involving four fractions and decimals systematically.",
+                notes: "The learner can solve expressions with fewer terms but becomes confused when four fractions and decimals are presented in one expression. The learner needs to break the expression into manageable steps and maintain accuracy when simplifying intermediate results."
+            },
+            24: {
+                worksheet: 24,
+                topic: "Performing Operations Involving Four Fractions and Decimals",
+                domain: "Number and Algebra",
+                gap: "Difficulty identifying appropriate operations and completing multistep computations independently.",
+                target: "Solve expressions involving four fractions and decimals with accuracy.",
+                notes: "The learner demonstrates some understanding of operations involving fractions and decimals but makes computational errors when several operations are combined. The learner needs to organize the solution step by step and verify the result before proceeding."
+            },
+            25: {
+                worksheet: 25,
+                topic: "Order of Operations",
+                domain: "Number and Algebra",
+                gap: "Difficulty remembering and applying the correct order of operations.",
+                target: "Evaluate numerical expressions using the correct order of operations.",
+                notes: "The learner can perform individual operations but struggles to apply the order of operations consistently. The learner needs practice identifying grouping symbols, exponents, multiplication, division, addition, and subtraction in the correct sequence."
+            },
+            26: {
+                worksheet: 26,
+                topic: "Evaluating Exponents and Expressing Numbers in Exponential Notation with a Given Base",
+                domain: "Number and Algebra",
+                gap: "Difficulty identifying the base and exponent and understanding repeated multiplication.",
+                target: "Evaluate exponential expressions and express numbers in exponential notation using a given base.",
+                notes: "The learner can evaluate simple powers but has difficulty interpreting the base and exponent, especially when numbers are written in exponential notation. The learner needs to distinguish repeated multiplication from multiplication of the base and exponent."
+            },
+            27: {
+                worksheet: 27,
+                topic: "Laws of Exponents",
+                domain: "Number and Algebra",
+                gap: "Difficulty recalling and distinguishing the different laws of exponents.",
+                target: "Identify and apply the appropriate laws of exponents.",
+                notes: "The learner can evaluate simple exponential expressions but struggles to select the appropriate law of exponents. The learner needs guided examples in identifying the relationship between the bases and exponents before applying each law."
+            },
+            28: {
+                worksheet: 28,
+                topic: "Evaluating Expressions Using the Laws of Exponents",
+                domain: "Number and Algebra",
+                gap: "Difficulty applying exponent laws in evaluating algebraic and numerical expressions.",
+                target: "Evaluate expressions using the appropriate laws of exponents.",
+                notes: "The learner can recall some laws of exponents but has difficulty applying them when evaluating algebraic expressions. The learner needs to identify the operation involved and determine which exponent law is applicable before simplifying."
+            },
+            29: {
+                worksheet: 29,
+                topic: "Product Law and Quotient Law",
+                domain: "Number and Algebra",
+                gap: "Difficulty distinguishing when to add or subtract exponents with the same base.",
+                target: "Apply the product and quotient laws of exponents.",
+                notes: "The learner can simplify expressions involving multiplication or division of powers with the same base when guided but struggles to apply the product and quotient laws independently. The learner needs to focus on when to add or subtract exponents while retaining the common base."
+            },
+            30: {
+                worksheet: 30,
+                topic: "Power of Powers Law and Power of Different Bases Law",
+                domain: "Number and Algebra",
+                gap: "Difficulty distinguishing exponent operations involving powers of powers and powers of different bases.",
+                target: "Apply the power of a power law and power of different bases law.",
+                notes: "The learner can apply basic exponent rules but becomes confused when powers are raised to another power or when different bases are involved. The learner needs to distinguish the power-of-a-power rule from the rule for powers of different bases."
+            },
+            31: {
+                worksheet: 31,
+                topic: "Powers of Different Bases Law and Other Laws of Exponents",
+                domain: "Number and Algebra",
+                gap: "Difficulty combining different exponent laws in one expression.",
+                target: "Apply appropriate exponent laws to simplify expressions involving different bases.",
+                notes: "The learner can recognize exponential expressions but struggles when more than one law of exponents is required in a single problem. The learner needs guided practice in identifying the applicable laws and simplifying the expression in an organized sequence."
+            },
+            32: {
+                worksheet: 32,
+                topic: "Laws of Exponents",
+                domain: "Number and Algebra",
+                gap: "Difficulty independently selecting and applying multiple exponent laws.",
+                target: "Simplify expressions using the different laws of exponents.",
+                notes: "The learner can apply familiar exponent laws in simple exercises but has difficulty choosing the correct rule in mixed problems. The learner needs to explain the reason for using a particular law and check whether the simplified expression is equivalent to the original."
+            },
+            33: {
+                worksheet: 33,
+                topic: "Square Roots",
+                domain: "Number and Algebra",
+                gap: "Difficulty identifying perfect squares and determining square roots.",
+                target: "Determine square roots of perfect squares and simplify basic radical expressions.",
+                notes: "The learner can identify perfect squares but struggles to determine their square roots, particularly when the numbers are less familiar. The learner needs practice connecting square roots with the inverse operation of squaring and recognizing perfect-square numbers."
+            },
+            34: {
+                worksheet: 34,
+                topic: "Translating Expressions into Symbols and Vice Versa",
+                domain: "Number and Algebra",
+                gap: "Difficulty identifying mathematical operations and translating verbal phrases into algebraic expressions.",
+                target: "Translate verbal expressions into mathematical symbols and translate algebraic expressions into words.",
+                notes: "The learner can understand simple verbal mathematical statements but has difficulty translating phrases into algebraic symbols. The learner needs to identify keywords, distinguish operations, and translate mathematical expressions into symbols and vice versa."
+            },
+            35: {
+                worksheet: 35,
+                topic: "Evaluating Algebraic Expressions",
+                domain: "Number and Algebra",
+                gap: "Difficulty substituting given values for variables and applying the order of operations.",
+                target: "Evaluate algebraic expressions by substituting given values for variables.",
+                notes: "The learner can substitute values into simple algebraic expressions but makes errors when evaluating expressions with several operations. The learner needs to follow the order of operations and carefully replace each variable with its given value."
+            },
+            36: {
+                worksheet: 36,
+                topic: "Adding Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty identifying like terms and combining coefficients correctly.",
+                target: "Add polynomials by combining like terms.",
+                notes: "The learner can identify like terms in a polynomial but struggles to combine them accurately. The learner needs to group terms with the same variables and exponents and apply the correct rules for adding their coefficients."
+            },
+            37: {
+                worksheet: 37,
+                topic: "Special Cases on Adding Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty handling polynomials with missing terms, different degrees, and negative coefficients.",
+                target: "Add polynomials involving special cases and combine like terms accurately.",
+                notes: "The learner can add ordinary polynomial expressions but has difficulty handling special cases, particularly missing terms and negative coefficients. The learner needs to arrange like terms properly and pay attention to the signs of each term."
+            },
+            38: {
+                worksheet: 38,
+                topic: "Subtracting Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty distributing the negative sign and combining like terms during subtraction.",
+                target: "Subtract polynomials by changing the signs of the subtrahend and combining like terms.",
+                notes: "The learner can identify corresponding terms in two polynomials but struggles with subtracting expressions containing negative terms. The learner needs to distribute the negative sign to every term in the second polynomial before combining like terms."
+            },
+            39: {
+                worksheet: 39,
+                topic: "Polynomial Operations and Functions",
+                domain: "Number and Algebra",
+                gap: "Difficulty recognizing polynomial expressions and performing operations involving polynomials and functions.",
+                target: "Identify polynomial expressions and perform the required polynomial operations and function evaluations.",
+                notes: "The learner can perform basic polynomial operations but has difficulty connecting polynomial expressions with their corresponding functions. The learner needs to identify the terms, determine the required operation, and apply the correct procedure when evaluating or simplifying polynomial expressions."
+            },
+            40: {
+                worksheet: 40,
+                topic: "Multiplying Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty applying the distributive property and multiplying monomials.",
+                target: "Multiply polynomials using the distributive property and combine like terms when applicable.",
+                notes: "The learner can multiply a monomial by a polynomial but struggles when multiplying two polynomials with several terms. The learner needs to multiply each term in the first polynomial by every term in the second and combine like terms afterward."
+            },
+            41: {
+                worksheet: 41,
+                topic: "Multiplying Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty organizing products and applying exponent rules when multiplying polynomial terms.",
+                target: "Multiply binomials and other polynomial expressions accurately.",
+                notes: "The learner can perform multiplication of simple polynomial expressions but sometimes omits products when using the distributive property. The learner needs to organize the multiplication systematically and check that every term has been multiplied."
+            },
+            42: {
+                worksheet: 42,
+                topic: "Multiplying Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty completing polynomial multiplication independently, particularly with multiple terms.",
+                target: "Multiply polynomial expressions and simplify the resulting polynomial.",
+                notes: "The learner can apply the distributive property in familiar examples but struggles to simplify the resulting polynomial. The learner needs to combine like terms carefully and observe the signs and exponents of the resulting terms."
+            },
+            43: {
+                worksheet: 43,
+                topic: "Dividing Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty dividing polynomial terms and applying exponent rules in division.",
+                target: "Divide polynomial expressions using appropriate procedures and simplify results.",
+                notes: "The learner can divide numerical expressions but has difficulty applying division procedures to polynomials. The learner needs to identify the divisor and dividend, apply the appropriate polynomial division process, and organize the quotient and remainder correctly."
+            },
+            44: {
+                worksheet: 44,
+                topic: "Multiplication and Division of Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty distinguishing multiplication and division procedures in polynomial expressions.",
+                target: "Perform multiplication and division of polynomials accurately.",
+                notes: "The learner can multiply and divide simple polynomial expressions but struggles when both operations are presented in mixed exercises. The learner needs to identify the required operation in each item and apply the correct procedure while maintaining the signs and exponents."
+            },
+            45: {
+                worksheet: 45,
+                topic: "Multiplication and Division of Polynomials",
+                domain: "Number and Algebra",
+                gap: "Difficulty solving more complex polynomial expressions involving multiplication and division.",
+                target: "Simplify polynomial expressions involving multiplication and division.",
+                notes: "The learner demonstrates partial understanding of polynomial multiplication and division but makes errors when simplifying expressions after performing the operations. The learner needs to arrange terms systematically, combine like terms, and verify the final expression."
+            },
+            46: {
+                worksheet: 46,
+                topic: "Linear Equations",
+                domain: "Number and Algebra",
+                gap: "Difficulty isolating the variable and maintaining equality when performing operations on both sides.",
+                target: "Solve linear equations in one variable using properties of equality.",
+                notes: "The learner can solve simple linear equations using basic inverse operations but struggles when variables and constants appear on both sides. The learner needs guided practice in isolating the variable while maintaining equality through equivalent operations."
+            },
+            47: {
+                worksheet: 47,
+                topic: "Inequalities",
+                domain: "Number and Algebra",
+                gap: "Difficulty understanding inequality symbols and distinguishing inequalities from equations.",
+                target: "Identify, interpret, and represent mathematical inequalities.",
+                notes: "The learner can distinguish greater-than and less-than symbols but has difficulty translating verbal statements into mathematical inequalities. The learner needs to identify comparison words and represent the relationships using the correct inequality symbols."
+            },
+            48: {
+                worksheet: 48,
+                topic: "Solving Inequalities",
+                domain: "Number and Algebra",
+                gap: "Difficulty applying inverse operations and remembering when the inequality symbol must be reversed.",
+                target: "Solve linear inequalities in one variable and represent solution sets.",
+                notes: "The learner can solve simple inequalities but struggles to determine when the inequality symbol must be reversed. The learner needs particular practice in multiplying or dividing both sides by a negative number and interpreting the resulting solution."
+            },
+            49: {
+                worksheet: 49,
+                topic: "Graphing and Solving Inequalities",
+                domain: "Number and Algebra",
+                gap: "Difficulty connecting algebraic solutions to their graphical representations on a number line.",
+                target: "Solve inequalities and represent solution sets using number lines.",
+                notes: "The learner can solve basic inequalities algebraically but has difficulty representing the solution on a number line. The learner needs to distinguish open and closed circles, determine the correct direction of the arrow, and connect the graph with the inequality statement."
+            },
+            50: {
+                worksheet: 50,
+                topic: "Factoring by GCF",
+                domain: "Number and Algebra",
+                gap: "Difficulty identifying the greatest common factor of polynomial terms.",
+                target: "Factor polynomials by determining and extracting the greatest common factor.",
+                notes: "The learner can identify the common numerical factor of terms but struggles to determine the greatest common factor of algebraic terms. The learner needs guided practice in identifying common numerical and variable factors and expressing the polynomial as a product."
+            },
+            51: {
+                worksheet: 51,
+                topic: "Factoring the Trinomial",
+                domain: "Number and Algebra",
+                gap: "Difficulty identifying factors of the constant term and finding the appropriate factor pair.",
+                target: "Factor trinomials using appropriate factoring techniques.",
+                notes: "The learner can identify a trinomial but has difficulty finding two factors that satisfy the required product and sum. The learner needs to examine the coefficients and constant term systematically and verify the factors by multiplying them."
+            },
+            52: {
+                worksheet: 52,
+                topic: "Factoring by Grouping; Word Problems with Factoring",
+                domain: "Number and Algebra",
+                gap: "Difficulty grouping terms, identifying common factors, and translating word problems into polynomial expressions.",
+                target: "Factor polynomials by grouping and apply factoring to word problems.",
+                notes: "The learner can factor simple polynomials but struggles when terms must first be grouped or when factoring is applied to word problems. The learner needs to identify common factors within groups and translate the given situation into an appropriate polynomial expression."
+            },
+            53: {
+                worksheet: 53,
+                topic: "Factoring the Difference of Two Cubes",
+                domain: "Number and Algebra",
+                gap: "Difficulty recognizing perfect cubes and recalling the difference of two cubes formula.",
+                target: "Identify and factor expressions involving the difference of two cubes.",
+                notes: "The learner can recognize expressions involving cubes but has difficulty identifying the difference-of-two-cubes pattern. The learner needs to identify the cube roots of both terms and apply the correct factoring formula, including the signs in each factor."
+            },
+            54: {
+                worksheet: 54,
+                topic: "Factoring the Difference of Two Cubes",
+                domain: "Number and Algebra",
+                gap: "Difficulty consistently applying the difference of two cubes formula to different expressions.",
+                target: "Factor difference of two cubes expressions and simplify completely.",
+                notes: "The learner can identify perfect cubes in familiar examples but struggles to apply the difference-of-two-cubes formula independently. The learner needs to verify that both terms are perfect cubes before factoring and check the result through multiplication."
+            },
+            55: {
+                worksheet: 55,
+                topic: "Factoring the Sum and Difference of Two Cubes",
+                domain: "Number and Algebra",
+                gap: "Difficulty distinguishing the factoring patterns for the sum and difference of two cubes.",
+                target: "Factor sums and differences of two cubes using the appropriate formulas.",
+                notes: "The learner can factor simple expressions but has difficulty distinguishing the sum of two cubes from the difference of two cubes. The learner needs to identify the signs of the terms and apply the corresponding factoring formula accurately."
+            },
+            56: {
+                worksheet: 56,
+                topic: "Factoring Using Various Methods",
+                domain: "Number and Algebra",
+                gap: "Difficulty determining the most appropriate factoring method for a given polynomial.",
+                target: "Identify and apply different factoring methods, including GCF, trinomial factoring, grouping, and special products.",
+                notes: "The learner can apply familiar factoring procedures but struggles to determine which method is appropriate when different polynomial forms are presented together. The learner needs to examine the expression first, identify its structure, and select the suitable factoring method."
+            },
+            57: {
+                worksheet: 57,
+                topic: "Factoring Using Various Methods; Word Problems on Factoring",
+                domain: "Number and Algebra",
+                gap: "Difficulty selecting appropriate factoring techniques and translating real-life situations into polynomial expressions.",
+                target: "Apply various factoring methods to solve polynomial expressions and word problems.",
+                notes: "The learner can factor polynomials using familiar methods but has difficulty selecting the appropriate method in mixed exercises. In word problems, the learner needs support in translating the given information into an algebraic expression, factoring it, and interpreting the resulting factors in the context of the problem."
+            }
+        };
+
+        // Global State
+        let learners = [];
+        let activeLearnerId = null;
+        let domainChartInstance = null;
+        let statusChartInstance = null;
+        let currentView = 'plan';
+        let schoolDetails = { name: '', id: '', address: '', head: '', classification: 'JHS', mathCoordinator: '', elemCoordinator: '' };
+        const G78_DATABASE = {
+            1: { worksheet: 1, topic: "Adding Similar Fractions", domain: "Number and Algebra", gap: "Difficulty identifying the numerator and denominator; adding numerators and denominators incorrectly; difficulty simplifying answers.", target: "Identify the parts of a fraction; add similar fractions by adding the numerators and retaining the denominator; express answers in simplest form.", notes: "The learner identifies the numerator and denominator but occasionally adds both instead of adding only the numerators. Guided examples and visual fraction models may help reinforce the correct procedure. Next session: Subtracting similar fractions." },
+            2: { worksheet: 2, topic: "Subtracting Similar Fractions", domain: "Number and Algebra", gap: "Difficulty subtracting numerators while keeping the denominator unchanged; difficulty simplifying the difference.", target: "Subtract similar fractions; retain the common denominator; simplify the resulting fraction.", notes: "The learner can identify the common denominator but needs occasional prompts to subtract only the numerators. Step-by-step exercises may help develop accuracy. Next session: Adding and subtracting mixed numbers." },
+            3: { worksheet: 3, topic: "Adding and Subtracting Mixed Numbers", domain: "Number and Algebra", gap: "Difficulty distinguishing the whole-number and fractional parts; regrouping when adding; converting improper fractions to mixed numbers.", target: "Add and subtract mixed numbers; regroup when necessary; simplify and express answers appropriately.", notes: "The learner can perform basic operations on the whole-number and fractional parts but has difficulty when regrouping is required. Fraction strips and guided examples may help clarify the process. Next session: Further practice in adding and subtracting mixed numbers." },
+            4: { worksheet: 4, topic: "Adding and Subtracting Mixed Numbers", domain: "Number and Algebra", gap: "Difficulty applying regrouping consistently; errors in finding common denominators; difficulty simplifying final answers.", target: "Apply appropriate procedures in adding and subtracting mixed numbers; solve exercises accurately; simplify answers.", notes: "The learner demonstrates improved performance in straightforward exercises but still needs guidance when the fractional parts require regrouping. Worked examples and gradual withdrawal of prompts may support independence. Next session: Adding and subtracting similar fractions." },
+            5: { worksheet: 5, topic: "Adding and Subtracting Similar Fractions", domain: "Number and Algebra", gap: "Difficulty deciding whether to add or subtract; errors in operating on numerators; incomplete simplification.", target: "Add and subtract similar fractions; identify the required operation; simplify answers.", notes: "The learner correctly identifies similar fractions but occasionally selects the wrong operation or overlooks simplification. Short mixed exercises and checking routines may help improve accuracy. Next session: Adding and subtracting dissimilar fractions." },
+            6: { worksheet: 6, topic: "Adding and Subtracting Dissimilar Fractions", domain: "Number and Algebra", gap: "Difficulty finding the least common denominator; difficulty generating equivalent fractions; incorrect operations on unlike denominators.", target: "Find the least common denominator; convert fractions into equivalent fractions; add and subtract dissimilar fractions.", notes: "The learner recognizes that the denominators are different but needs assistance in finding a common denominator. Using multiples and equivalent-fraction models may help develop understanding. Next session: Further practice in adding and subtracting dissimilar fractions." },
+            7: { worksheet: 7, topic: "Adding and Subtracting Dissimilar Fractions", domain: "Number and Algebra", gap: "Difficulty determining common denominators efficiently; errors in converting fractions; difficulty simplifying answers.", target: "Apply the least common denominator in adding and subtracting dissimilar fractions; simplify results.", notes: "The learner can find common denominators with guidance but sometimes makes errors when converting the numerators. A step-by-step checklist and guided practice may help improve accuracy. Next session: Word problems on adding and subtracting fractions." },
+            8: { worksheet: 8, topic: "Word Problems on Adding and Subtracting Fractions", domain: "Number and Algebra", gap: "Difficulty identifying relevant information; distinguishing addition from subtraction situations; translating word problems into mathematical expressions.", target: "Identify given and required information; determine the appropriate operation; solve and interpret fraction word problems.", notes: "The learner can perform fraction operations but needs support in identifying the operation required by a word problem. Highlighting key information and asking guiding questions may help develop problem-solving skills. Next session: Multiplying fractions." },
+            9: { worksheet: 9, topic: "Multiplying Fractions", domain: "Number and Algebra", gap: "Difficulty multiplying numerators and denominators; confusion between multiplication and addition procedures; simplifying products.", target: "Multiply fractions by multiplying numerators and denominators; simplify products to lowest terms.", notes: "The learner understands the basic multiplication procedure but occasionally applies rules for addition of fractions. Contrasting examples and guided exercises may help distinguish the operations. Next session: Multiplying mixed numbers." },
+            10: { worksheet: 10, topic: "Multiplying Mixed Numbers", domain: "Number and Algebra", gap: "Difficulty converting mixed numbers to improper fractions; errors in multiplication; simplifying products.", target: "Convert mixed numbers to improper fractions; multiply fractions; convert products to mixed numbers when appropriate.", notes: "The learner can multiply fractions but needs prompts when converting mixed numbers into improper fractions. Modeling the conversion process before multiplication may help improve accuracy. Next session: Further practice in multiplying mixed numbers." },
+            11: { worksheet: 11, topic: "Multiplying Mixed Numbers", domain: "Number and Algebra", gap: "Difficulty completing the conversion process independently; errors in multiplying large numerators and denominators; difficulty expressing answers in simplest form.", target: "Independently convert, multiply, simplify, and express products of mixed numbers correctly.", notes: "The learner shows improvement in converting mixed numbers but still makes occasional computational errors. Guided practice followed by independent exercises may help build accuracy and confidence. Next session: Dividing fractions." },
+            12: { worksheet: 12, topic: "Dividing Fractions", domain: "Number and Algebra", gap: "Difficulty remembering the reciprocal of the divisor; confusion about which fraction to invert; errors in multiplying after changing division to multiplication.", target: "Divide fractions by multiplying the dividend by the reciprocal of the divisor; simplify the quotient.", notes: "The learner can identify the fractions involved but sometimes inverts the wrong fraction. A visual reminder and repeated guided demonstrations may help reinforce the correct sequence. Next session: Dividing mixed numbers." },
+            13: { worksheet: 13, topic: "Dividing Mixed Numbers", domain: "Number and Algebra", gap: "Difficulty converting mixed numbers to improper fractions; identifying the reciprocal of the divisor; simplifying quotients.", target: "Convert mixed numbers to improper fractions; divide using reciprocals; simplify and express answers correctly.", notes: "The learner needs assistance in converting mixed numbers and identifying the divisor before taking its reciprocal. A structured sequence of steps may help the learner complete the process more independently. Next session: Adding decimals." },
+            14: { worksheet: 14, topic: "Adding Decimals", domain: "Number and Algebra", gap: "Difficulty aligning decimal points; confusion about place values; errors when adding decimals with different numbers of decimal places.", target: "Identify decimal place values; align decimal points; add decimals accurately.", notes: "The learner performs addition correctly when decimal places are equal but has difficulty aligning numbers with different decimal lengths. Place-value charts and lined-up examples may provide useful support. Next session: Further practice in adding decimals." },
+            15: { worksheet: 15, topic: "Adding Decimals", domain: "Number and Algebra", gap: "Difficulty maintaining correct place-value alignment; errors in regrouping; incomplete use of zero placeholders.", target: "Add decimals with varying numbers of decimal places; apply regrouping; verify sums using estimation.", notes: "The learner demonstrates improved alignment of decimal points but occasionally makes regrouping errors. Guided exercises using place-value columns may help improve computational accuracy. Next session: Subtracting decimals." },
+            16: { worksheet: 16, topic: "Subtracting Decimals", domain: "Number and Algebra", gap: "Difficulty aligning decimal points; errors in regrouping across place values; difficulty subtracting decimals with different decimal lengths.", target: "Subtract decimals accurately; align decimal points; use zero placeholders and regroup when necessary.", notes: "The learner can subtract decimals with equal decimal places but needs support when regrouping across decimal positions. Place-value charts and step-by-step demonstrations may help. Next session: Further practice in subtracting decimals." },
+            17: { worksheet: 17, topic: "Subtracting Decimals", domain: "Number and Algebra", gap: "Difficulty regrouping across zeros; errors in maintaining place-value alignment; difficulty checking the reasonableness of answers.", target: "Subtract decimals with and without regrouping; use estimation to check answers.", notes: "The learner completes basic subtraction correctly but hesitates when zeros are present in the minuend. Guided examples and estimation activities may help strengthen understanding. Next session: Adding and subtracting decimals using word phrases." },
+            18: { worksheet: 18, topic: "Adding and Subtracting Decimals (Word Phrases)", domain: "Number and Algebra", gap: "Difficulty interpreting phrases that indicate addition or subtraction; translating verbal statements into mathematical expressions.", target: "Interpret word phrases; identify the appropriate operation; translate verbal expressions into decimal number sentences and solve.", notes: "The learner can perform decimal operations but sometimes has difficulty translating verbal phrases into number sentences. Asking the learner to explain what the problem describes before computing may help. Next session: Multiplying decimals." },
+            19: { worksheet: 19, topic: "Multiplying Decimals", domain: "Number and Algebra", gap: "Difficulty multiplying decimal numbers; determining the correct number of decimal places in the product; confusion about place-value positioning.", target: "Multiply decimals; count decimal places in factors; place the decimal point correctly in the product.", notes: "The learner can multiply the digits but occasionally places the decimal point incorrectly. Using place-value explanations and estimation may help the learner determine whether the answer is reasonable. Next session: Further practice in multiplying decimals." },
+            20: { worksheet: 20, topic: "Multiplying Decimals", domain: "Number and Algebra", gap: "Difficulty applying decimal placement consistently; errors in basic multiplication facts; difficulty estimating products.", target: "Multiply decimals accurately; apply decimal-place rules; check products through estimation.", notes: "The learner demonstrates improved multiplication skills but still needs occasional prompts in positioning the decimal point. Guided examples followed by independent practice may help build consistency. Next session: Dividing decimals." },
+            21: { worksheet: 21, topic: "Dividing Decimals", domain: "Number and Algebra", gap: "Difficulty dividing decimal numbers; confusion about moving the decimal point; errors in quotient computation.", target: "Divide decimals using appropriate procedures; position the decimal point correctly; verify quotients through multiplication.", notes: "The learner understands basic division but needs guidance in handling the decimal point in the divisor and dividend. Demonstrating the procedure using equivalent division expressions may help. Next session: Dividing whole numbers by decimals." },
+            22: { worksheet: 22, topic: "Dividing Whole Numbers by Decimals", domain: "Number and Algebra", gap: "Difficulty converting the divisor into a whole number; applying the same adjustment to the dividend; interpreting the quotient.", target: "Divide whole numbers by decimals; make equivalent changes to the dividend and divisor; check answers.", notes: "The learner can perform whole-number division but sometimes changes only the divisor. A place-value chart and guided examples may help reinforce the need to adjust both numbers equally. Next session: Division by 0.1, 0.01, and 0.001." },
+            23: { worksheet: 23, topic: "Division by 0.1, 0.01, and 0.001", domain: "Number and Algebra", gap: "Difficulty understanding the effect of dividing by decimals less than one; confusion about decimal movement; reliance on memorized rules.", target: "Divide numbers by 0.1, 0.01, and 0.001; explain the relationship between decimal division and multiplication by powers of ten.", notes: "The learner can apply the decimal-moving rule in familiar examples but has difficulty explaining why the quotient becomes larger. Using place-value patterns and equivalent multiplication expressions may help. Next session: Further practice in division by 0.1, 0.01, and 0.001." },
+            24: { worksheet: 24, topic: "Division by 0.1, 0.01, and 0.001", domain: "Number and Algebra", gap: "Difficulty applying decimal division rules consistently; errors in determining the number of places to move the decimal point; difficulty checking answers.", target: "Divide decimals by 0.1, 0.01, and 0.001 accurately; use multiplication to verify quotients.", notes: "The learner shows improved performance in routine exercises but still needs prompts when the dividend is also a decimal. Guided comparisons and estimation may help strengthen understanding. Next session: Division by 10, 100, and 1,000." },
+            25: { worksheet: 25, topic: "Division by 10, 100, and 1,000", domain: "Number and Algebra", gap: "Difficulty understanding place-value changes when dividing by powers of ten; incorrect decimal placement; confusion about zeros in the quotient.", target: "Divide whole numbers and decimals by 10, 100, and 1,000; explain place-value changes.", notes: "The learner recognizes the pattern of dividing by powers of ten but occasionally moves the decimal point the wrong way or by the wrong number of places. Place-value charts may help. Next session: Further practice in division by 10, 100, and 1,000." },
+            26: { worksheet: 26, topic: "Division by 10, 100, and 1,000", domain: "Number and Algebra", gap: "Difficulty applying place-value patterns to different numbers; errors when inserting zeros; limited ability to estimate quotients.", target: "Apply division by powers of ten accurately; determine reasonable quotient values using place-value understanding.", notes: "The learner can divide by 10 and 100 with greater confidence but needs support when dividing by 1,000 or working with decimals. Pattern-based exercises may help develop independence. Next session: Identifying and describing solid figures." },
+            27: { worksheet: 27, topic: "Solid Figures", domain: "Measurement and Geometry", gap: "Difficulty distinguishing solid figures from plane figures; identifying three-dimensional objects; recognizing faces, edges, and vertices.", target: "Identify common solid figures; describe their characteristics; distinguish three-dimensional figures from plane figures.", notes: "The learner identifies familiar solid objects but has difficulty naming their geometric forms and describing their parts. Using actual objects and models may help connect everyday experiences to geometric concepts. Next session: Identifying and describing cubes." },
+            28: { worksheet: 28, topic: "Cubes", domain: "Measurement and Geometry", gap: "Difficulty recognizing cubes in different orientations; identifying faces, edges, and vertices; distinguishing cubes from other rectangular solids.", target: "Identify a cube; describe its faces, edges, and vertices; recognize cubes in real-life objects.", notes: "The learner recognizes a cube in familiar objects but occasionally confuses its faces, edges, and vertices. A physical cube model and guided counting activities may help. Next session: Identifying and describing triangular prisms." },
+            29: { worksheet: 29, topic: "Triangular Prisms", domain: "Measurement and Geometry", gap: "Difficulty identifying the two triangular bases; distinguishing rectangular faces from triangular faces; counting edges and vertices.", target: "Identify triangular prisms; describe their bases, faces, edges, and vertices; distinguish them from other prisms.", notes: "The learner can recognize the triangular ends but needs assistance in identifying all the faces and counting the edges and vertices. Using a model or net may help clarify the structure. Next session: Identifying and describing pyramids." },
+            30: { worksheet: 30, topic: "Pyramids", domain: "Measurement and Geometry", gap: "Difficulty distinguishing pyramids from prisms; identifying the base and triangular lateral faces; recognizing the apex.", target: "Identify pyramids; describe their bases, lateral faces, edges, vertices, and apex; classify pyramids according to their bases.", notes: "The learner recognizes a pyramid but sometimes confuses its structure with that of a prism. Comparing physical models and identifying the base and apex may help. Next session: Identifying and describing cylinders." },
+            31: { worksheet: 31, topic: "Cylinders", domain: "Measurement and Geometry", gap: "Difficulty identifying the two circular bases and curved surface; confusion between cylinders and prisms; difficulty describing their properties.", target: "Identify cylinders; describe their circular bases and curved surface; recognize cylindrical objects in the environment.", notes: "The learner identifies familiar cylindrical objects but has difficulty explaining why a cylinder is different from a prism. Comparing models and examining a cylinder's net may help. Next session: Identifying and describing cones." },
+            32: { worksheet: 32, topic: "Cones", domain: "Measurement and Geometry", gap: "Difficulty identifying the circular base, curved surface, and vertex or apex; confusion between cones and pyramids.", target: "Identify cones; describe their parts; distinguish cones from pyramids and other solid figures.", notes: "The learner recognizes a cone in everyday objects but occasionally confuses its curved surface with the triangular faces of a pyramid. Physical models and guided comparisons may help. Next session: Identifying and describing spheres." },
+            33: { worksheet: 33, topic: "Spheres", domain: "Measurement and Geometry", gap: "Difficulty recognizing spheres in different sizes and orientations; distinguishing spheres from circles; difficulty describing their characteristics.", target: "Identify spheres; distinguish spheres from plane circles; recognize spherical objects in everyday situations.", notes: "The learner identifies familiar spherical objects but sometimes describes a sphere as a circle. Using three-dimensional models and comparing them with flat circular shapes may help. Next session: Differentiating solid and plane figures." },
+            34: { worksheet: 34, topic: "Differentiating Solid and Plane Figures", domain: "Measurement and Geometry", gap: "Difficulty distinguishing two-dimensional and three-dimensional figures; confusion between the names and properties of shapes; difficulty classifying examples.", target: "Differentiate plane figures from solid figures; classify shapes according to their dimensions and characteristics.", notes: "The learner correctly identifies familiar shapes but occasionally classifies objects based only on their appearance. Asking the learner to describe whether a figure is flat or occupies space may help clarify the distinction. Next session: Differentiating speed, distance, and time." },
+            35: { worksheet: 35, topic: "Differentiating Speed, Distance, Time", domain: "Measurement and Geometry", gap: "Difficulty distinguishing speed, distance, and time; confusion about their units of measurement; difficulty identifying the required quantity in a situation.", target: "Define speed, distance, and time; identify appropriate units; distinguish the three quantities in real-life situations.", notes: "The learner recognizes familiar units but sometimes interchanges distance and speed when interpreting situations. Relating the concepts to everyday travel experiences may help. Next session: Calculating speed, distance, and time." },
+            36: { worksheet: 36, topic: "Calculating Speed, Distance, Time", domain: "Measurement and Geometry", gap: "Difficulty selecting the appropriate formula; substituting values correctly; performing calculations using consistent units.", target: "Use the relationships among speed, distance, and time; identify the required formula; solve routine problems.", notes: "The learner identifies the given values but needs prompts in selecting and applying the correct formula. A formula triangle and guided substitution exercises may help develop problem-solving skills. Next session: Further practice in calculating speed, distance, and time." },
+            37: { worksheet: 37, topic: "Calculating Speed, Distance, Time", domain: "Measurement and Geometry", gap: "Difficulty rearranging formulas; converting units when necessary; interpreting answers in context.", target: "Calculate speed, distance, and time; rearrange formulas when needed; express answers with appropriate units.", notes: "The learner can substitute values into a formula but has difficulty when the unknown quantity requires rearranging the relationship. Guided examples and unit-labeling strategies may help. Next session: Finding the area of composite figures." },
+            38: { worksheet: 38, topic: "Area of Composite Figures", domain: "Measurement and Geometry", gap: "Difficulty identifying component shapes; selecting appropriate area formulas; understanding how areas combine to form a composite figure.", target: "Identify component shapes; decompose composite figures; apply appropriate area formulas.", notes: "The learner identifies basic shapes within a composite figure but needs assistance in dividing the figure into manageable parts. Drawing partition lines and labeling dimensions may help. Next session: Further practice in finding the area of composite figures." },
+            39: { worksheet: 39, topic: "Area of Composite Figures", domain: "Measurement and Geometry", gap: "Difficulty determining which regions to add or subtract; selecting correct dimensions; applying formulas consistently.", target: "Calculate areas of composite figures by adding or subtracting component areas; show organized solutions.", notes: "The learner can calculate the area of individual shapes but occasionally adds an area that should be subtracted or overlooks a section. Color-coding component regions may help. Next session: Further application of area formulas to composite figures." },
+            40: { worksheet: 40, topic: "Area of Composite Figures", domain: "Measurement and Geometry", gap: "Difficulty solving unfamiliar composite figures; interpreting incomplete dimensions; checking whether the computed area is reasonable.", target: "Solve varied composite-area problems; determine missing dimensions when possible; present solutions with correct square units.", notes: "The learner demonstrates improved ability to decompose figures but still needs guidance in identifying missing dimensions and choosing an efficient solution. Guided questioning and annotated diagrams may help. Next session: Finding the surface area of a rectangular prism." },
+            41: { worksheet: 41, topic: "Surface Area of a Rectangular Prism", domain: "Measurement and Geometry", gap: "Difficulty distinguishing surface area from volume; identifying the six faces; determining dimensions and applying the surface-area formula.", target: "Identify the faces of a rectangular prism; calculate the area of each face; determine total surface area using appropriate square units.", notes: "The learner identifies the dimensions of the prism but needs support in recognizing that opposite faces have equal areas. A labeled net and guided computation may help. Next session: Finding the surface area of a triangular prism." },
+            42: { worksheet: 42, topic: "Surface Area of a Triangular Prism", domain: "Measurement and Geometry", gap: "Difficulty identifying the two triangular bases and three rectangular faces; calculating the areas of component faces; using appropriate dimensions.", target: "Identify all faces of a triangular prism; calculate the areas of the bases and lateral faces; determine total surface area.", notes: "The learner can identify the triangular bases but occasionally overlooks one of the rectangular lateral faces. Using a net and checking off each face as it is calculated may help. Next session: Finding the surface area of a cube and a square pyramid." },
+            43: { worksheet: 43, topic: "Surface Area of a Cube and a Square Pyramid", domain: "Measurement and Geometry", gap: "Difficulty identifying all faces of the solids; applying surface-area formulas; distinguishing the height of a pyramid from its slant height.", target: "Calculate the surface area of cubes and square pyramids; identify relevant dimensions; apply appropriate formulas.", notes: "The learner calculates the surface area of a cube with minimal assistance but needs guidance in identifying the slant height and triangular faces of a square pyramid. Labeled diagrams may help. Next session: Further practice in finding the surface area of a cube and a square pyramid." },
+            44: { worksheet: 44, topic: "Surface Area of a Cube and Square Pyramid", domain: "Measurement and Geometry", gap: "Difficulty applying formulas to varied dimensions; computing triangular face areas; adding all surface areas accurately.", target: "Solve problems involving the surface area of cubes and square pyramids; organize computations and use correct square units.", notes: "The learner demonstrates improved formula selection but occasionally omits a face or uses an incorrect dimension in the pyramid. Guided checking of each face may improve accuracy. Next session: Finding the surface area of a cylinder." },
+            45: { worksheet: 45, topic: "Surface Area of a Cylinder", domain: "Measurement and Geometry", gap: "Difficulty identifying the circular bases and curved lateral surface; distinguishing radius from diameter; applying the formula correctly.", target: "Identify the parts of a cylinder; calculate the areas of its circular bases and lateral surface; determine total surface area.", notes: "The learner identifies the radius and height when labeled but sometimes uses the diameter in place of the radius. Annotated diagrams and review of the relationship between radius and diameter may help. Next session: Finding the surface area of a cone and other solid figures." },
+            46: { worksheet: 46, topic: "Surface Area of a Cone and Other Solid Figures", domain: "Measurement and Geometry", gap: "Difficulty identifying the relevant dimensions of a cone; distinguishing slant height from vertical height; selecting formulas for different solids.", target: "Identify the parts and dimensions of a cone; calculate its surface area; apply appropriate surface-area procedures to other solid figures covered.", notes: "The learner can identify the circular base but needs assistance in distinguishing slant height from vertical height. Labeled diagrams and guided formula substitution may help. Next session: Finding the surface area of a sphere and other solid figures." },
+            47: { worksheet: 47, topic: "Surface Area of a Sphere and Other Solid Figures", domain: "Measurement and Geometry", gap: "Difficulty recognizing the dimensions needed for surface-area calculations; selecting the appropriate formula; handling squared measurements and units.", target: "Calculate the surface area of a sphere and apply appropriate formulas to other solid figures; express answers using square units.", notes: "The learner recognizes the radius but occasionally substitutes the wrong measurement or makes errors in squaring it. Formula cards, estimation, and guided substitution may help. Next session: Listing outcomes." },
+            48: { worksheet: 48, topic: "Listing Outcomes", domain: "Data and Probability", gap: "Difficulty identifying all possible outcomes of an activity; omitting possibilities; listing repeated outcomes.", target: "Identify possible outcomes of simple experiments; organize outcomes systematically; avoid omissions and repetitions.", notes: "The learner can identify some possible outcomes but tends to overlook combinations when several choices are involved. Using tables, diagrams, or organized lists may help ensure completeness. Next session: Further practice in listing outcomes." },
+            49: { worksheet: 49, topic: "Listing Outcomes", domain: "Data and Probability", gap: "Difficulty organizing outcomes involving more than one event; confusing order and repetition; difficulty determining whether a list is complete.", target: "List outcomes systematically using organized methods; identify distinct outcomes; check for missing or repeated possibilities.", notes: "The learner lists simple outcomes correctly but needs prompts when combining choices from two sets. A systematic listing strategy and guided checking may help. Next session: Further application of listing outcomes." },
+            50: { worksheet: 50, topic: "Listing Outcomes", domain: "Data and Probability", gap: "Difficulty using tables or diagrams to represent possible outcomes; incomplete enumeration; difficulty interpreting organized lists.", target: "Represent possible outcomes using tables, tree diagrams, or systematic lists; determine the total number of distinct outcomes.", notes: "The learner can complete a list when the choices are limited but has difficulty maintaining an organized sequence as possibilities increase. Guided use of a table or tree diagram may help. Next session: Further practice in listing outcomes." },
+            51: { worksheet: 51, topic: "Listing Outcomes", domain: "Data and Probability", gap: "Difficulty independently applying systematic listing; overlooking combinations; difficulty explaining how the total number of outcomes is determined.", target: "Independently enumerate possible outcomes; use appropriate organizational strategies; verify completeness and uniqueness.", notes: "The learner demonstrates improved organization but still needs occasional prompts to check whether all possible combinations have been included. Independent exercises followed by comparison with a systematic diagram may help. Next session: Adding two positive integers and adding two positive similar fractions." },
+            52: { worksheet: 52, topic: "Adding Two Positive Integers; Adding Two Positive Similar Fractions", domain: "Number and Algebra", gap: "Difficulty applying addition rules consistently to integers and fractions; confusion between whole-number and fraction operations; incomplete simplification.", target: "Add two positive integers; add two positive similar fractions; simplify fraction sums when necessary.", notes: "The learner adds positive integers accurately but occasionally applies whole-number procedures to fraction denominators. Comparing the two procedures and using fraction models may help. Next session: Adding two negative integers and adding two negative similar fractions." },
+            53: { worksheet: 53, topic: "Adding Two Negative Integers; Adding Two Negative Similar Fractions", domain: "Number and Algebra", gap: "Difficulty understanding the sum of two negative numbers; confusion about signs; difficulty applying integer rules to fractions.", target: "Add two negative integers and two negative similar fractions; determine the sign and magnitude of the sum.", notes: "The learner recognizes that two negative integers produce a negative sum but sometimes adds or changes signs incorrectly when working with fractions. A number line and sign-pattern examples may help. Next session: Adding a positive and a negative integer and adding a positive and negative fraction." },
+            54: { worksheet: 54, topic: "Adding a Positive and a Negative Integer; Adding a Positive and a Negative Fraction", domain: "Number and Algebra", gap: "Difficulty determining the sign of the sum; comparing absolute values; applying integer addition rules to fractions with different signs.", target: "Add integers and fractions with different signs; compare absolute values; determine the sign and simplify the result.", notes: "The learner can identify the signs of the numbers but needs guidance in determining which absolute value is greater. Number-line demonstrations and side-by-side comparisons may help. Next session: Further practice in adding a positive and a negative integer." },
+            55: { worksheet: 55, topic: "Adding a Positive and a Negative Integer", domain: "Number and Algebra", gap: "Difficulty applying the rule for adding integers with different signs; determining the sign of the result; confusing addition with subtraction of absolute values.", target: "Add integers with different signs; subtract absolute values; use the sign of the number with the greater absolute value.", notes: "The learner can subtract the absolute values but occasionally assigns the wrong sign to the answer. Number-line activities and guided comparison of absolute values may help. Next session: Subtracting two positive integers." },
+            56: { worksheet: 56, topic: "Subtracting Two Positive Integers", domain: "Number and Algebra", gap: "Difficulty distinguishing subtraction from addition; regrouping when the minuend is smaller in a given place value; interpreting differences.", target: "Subtract two positive integers; apply regrouping correctly; verify differences using addition.", notes: "The learner subtracts numbers accurately when no regrouping is needed but makes occasional errors when borrowing across place values. Place-value blocks and step-by-step regrouping may help. Next session: Subtracting two negative integers." },
+            57: { worksheet: 57, topic: "Subtracting Two Negative Integers", domain: "Number and Algebra", gap: "Difficulty understanding subtraction involving negative numbers; confusion about changing signs; difficulty interpreting the result using a number line.", target: "Subtract two negative integers; apply the rule for subtracting signed numbers; interpret the difference using a number line.", notes: "The learner identifies the negative signs but sometimes subtracts the numbers without considering the effect of the signs. Number-line demonstrations and the keep-change-change strategy, with explanation, may help. Next session: Subtracting a positive integer by a negative integer." },
+            58: { worksheet: 58, topic: "Subtracting a Positive Integer by a Negative Integer", domain: "Number and Algebra", gap: "Difficulty interpreting subtraction of a negative integer; confusion about why the result increases; incorrect sign changes.", target: "Subtract a negative integer from a positive integer; apply the appropriate sign rule; represent the operation on a number line.", notes: "The learner can identify the integers involved but occasionally treats the operation as ordinary subtraction. Number-line movement and equivalent addition expressions may help clarify the process. Next session: Subtracting a negative integer by a positive integer and subtracting a negative fraction by a positive fraction." },
+            59: { worksheet: 59, topic: "Subtracting a Negative Integer by a Positive Integer; Subtracting a Negative Fraction by a Positive Fraction", domain: "Number and Algebra", gap: "Difficulty handling subtraction involving negative minuends; applying sign rules to fractions; determining the correct sign of the result.", target: "Subtract positive integers from negative integers; subtract positive fractions from negative fractions; simplify fraction answers.", notes: "The learner recognizes the negative minuend but needs support in interpreting the direction and magnitude of the difference. Number-line representations and fraction models may help reinforce the rules. Next session: Further practice in subtracting integers." },
+            60: { worksheet: 60, topic: "Subtracting Integers", domain: "Number and Algebra", gap: "Difficulty applying subtraction rules across different sign combinations; inconsistent sign changes; limited ability to verify results.", target: "Subtract integers with different and similar signs; rewrite subtraction as addition of the opposite; check answers using number lines or inverse operations.", notes: "The learner performs familiar subtraction examples correctly but hesitates when the signs differ. A consistent step-by-step procedure and mixed exercises may help develop accuracy and independence. Next session: Multiplying two positive integers and two positive fractions." },
+            61: { worksheet: 61, topic: "Multiplying Two Positive Integers; Multiplying Two Positive Fractions", domain: "Number and Algebra", gap: "Difficulty recalling multiplication facts; applying multiplication rules to fractions; simplifying products.", target: "Multiply two positive integers and two positive fractions; apply the correct sign and fraction procedures; simplify products.", notes: "The learner multiplies positive integers with greater confidence but occasionally makes errors in multiplying fraction numerators and denominators. Visual fraction models and guided computation may help. Next session: Multiplying two negative integers and two negative fractions." },
+            62: { worksheet: 62, topic: "Multiplying Two Negative Integers; Multiplying Two Negative Fractions", domain: "Number and Algebra", gap: "Difficulty understanding why the product of two negative numbers is positive; confusion about sign rules; errors in fraction multiplication.", target: "Multiply two negative integers and two negative fractions; apply the positive-product sign rule; simplify fraction products.", notes: "The learner can multiply the absolute values but sometimes gives a negative answer instead of a positive one. Sign-pattern charts and examples may help reinforce the rule. Next session: Multiplying two integers and two fractions with different signs." },
+            63: { worksheet: 63, topic: "Multiplying Two Integers with Different Signs; Multiplying Fractions with Different Signs", domain: "Number and Algebra", gap: "Difficulty determining the sign of products with different signs; inconsistent application of multiplication rules; errors in fraction computation.", target: "Multiply integers and fractions with different signs; determine the sign of the product; simplify fraction answers.", notes: "The learner performs the numerical multiplication correctly but occasionally assigns a positive sign to a product involving different signs. Sign-rule charts and guided examples may help. Next session: Further practice in multiplying integers." },
+            64: { worksheet: 64, topic: "Multiplying Integers", domain: "Number and Algebra", gap: "Difficulty applying multiplication sign rules to different combinations; confusion between products of similar and different signs; computational errors.", target: "Multiply integers involving positive and negative factors; apply sign rules consistently; solve mixed exercises independently.", notes: "The learner correctly identifies the sign in familiar examples but still needs occasional prompts when the factors have different signs. Mixed-sign exercises and verbal explanation of the rule may help. Next session: Division of two positive integers and two negative integers." },
+            65: { worksheet: 65, topic: "Division of Two Positive Integers; Division of Two Negative Integers", domain: "Number and Algebra", gap: "Difficulty applying division facts; understanding the sign of the quotient; confusion between multiplication and division sign rules.", target: "Divide two positive integers and two negative integers; determine the sign of the quotient; verify answers using multiplication.", notes: "The learner performs positive integer division accurately but occasionally assigns the wrong sign when both integers are negative. Connecting division to multiplication facts may help reinforce the rule. Next session: Division of two integers with different signs." },
+            66: { worksheet: 66, topic: "Division of Two Integers with Different Signs", domain: "Number and Algebra", gap: "Difficulty determining the sign of a quotient when the signs differ; errors in basic division; inconsistent application of integer sign rules.", target: "Divide integers with different signs; apply the negative-quotient rule; verify quotients through multiplication.", notes: "The learner can divide the absolute values but sometimes gives a positive quotient when the dividend and divisor have different signs. Sign-pattern examples and inverse-operation checks may help. Next session: Further practice in dividing integers." },
+            67: { worksheet: 67, topic: "Dividing Integers", domain: "Number and Algebra", gap: "Difficulty consistently applying division rules across all sign combinations; computational errors; limited ability to verify quotient and remainder where applicable.", target: "Divide integers with similar and different signs; determine the correct sign of the quotient; solve mixed exercises and verify answers.", notes: "The learner demonstrates understanding of basic integer division but may still need prompts when selecting the sign of the quotient. A summary chart of sign rules and independent mixed exercises may help assess mastery. Next session: Cumulative review and assessment of integer operations, with follow-up support based on the learner’s demonstrated needs." }
+        };
+
+        // Helper function to escape HTML special characters and prevent XSS / render errors
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Sample initial dataset
+        const initialLearners = [
+            {
+                id: "learner-101",
+                name: "DELA CRUZ, JUAN M.",
+                gradeLevel: "Grade 9",
+                section: "Rizal",
+                tutorName: "Teacher Maria Santos",
+                status: "Ongoing",
+                domainGaps: [
+                    {
+                        week: 1,
+                        worksheetPreset: 1,
+                        domain: ARAL_DATABASE[1].domain,
+                        identifiedGaps: ARAL_DATABASE[1].gap,
+                        targetSkills: ARAL_DATABASE[1].target,
+                        tutorNotes: ARAL_DATABASE[1].notes
+                    },
+                    {
+                        week: 2,
+                        worksheetPreset: 2,
+                        domain: ARAL_DATABASE[2].domain,
+                        identifiedGaps: ARAL_DATABASE[2].gap,
+                        targetSkills: ARAL_DATABASE[2].target,
+                        tutorNotes: ARAL_DATABASE[2].notes
+                    }
+                ],
+                sessions: [
+                    {
+                        week: 1,
+                        duration: 60,
+                        startDate: "2026-11-02",
+                        endDate: "2026-11-06",
+                        startWs: 1,
+                        endWs: 1,
+                        notes: "Learner responded well to visual fraction models."
+                    }
+                ]
+            }
+        ];
+
+        // Format Date Helper (e.g. 2026-11-06 -> November 06, 2026)
+        function formatDateToLong(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            const year = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1;
+            const day = parseInt(parts[2], 10);
+            const date = new Date(year, month, day);
+            return date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+        }
+
+        // --- Local Storage Management ---
+        function loadData() {
+            const stored = localStorage.getItem('deped_imip_learners_v2');
+            if (stored) {
+                try {
+                    learners = JSON.parse(stored);
+                } catch (e) {
+                    console.error("Error parsing stored data", e);
+                    learners = initialLearners;
+                }
+            } else {
+                learners = initialLearners;
+                saveData();
+            }
+            
+            loadSchoolData();
+        }
+
+        function saveData() {
+            localStorage.setItem('deped_imip_learners_v2', JSON.stringify(learners));
+        }
+
+        function loadSchoolData() {
+            const stored = localStorage.getItem('deped_imip_school_v1');
+            if (stored) {
+                try { 
+                    const parsed = JSON.parse(stored); 
+                    schoolDetails = { ...schoolDetails, ...parsed };
+                } catch(e) {}
+            }
+            updateSchoolDisplay();
+            // Re-populate slicer in case classification changed available options
+            if (currentView === 'dashboard') populateGradeSlicerOptions();
+        }
+
+        function saveSchoolData() {
+            localStorage.setItem('deped_imip_school_v1', JSON.stringify(schoolDetails));
+        }
+
+        function getGradesByClassification() {
+            const c = schoolDetails.classification || 'JHS';
+            const elem = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6'];
+            const jhs = ['Grade 7', 'Grade 8', 'Grade 9', 'Grade 10'];
+            if (c === 'Elementary') return elem;
+            if (c === 'JHS') return jhs;
+            return [...elem, ...jhs]; // Integrated
+        }
+
+        function updateSchoolDisplay() {
+            const hasDetails = schoolDetails.name || schoolDetails.id || schoolDetails.address;
+            
+            const schoolCard = document.getElementById('globalSchoolCard');
+            if (schoolCard) {
+                if (hasDetails) {
+                    document.getElementById('displaySchoolName').textContent = schoolDetails.name || '--';
+                    document.getElementById('displaySchoolId').textContent = schoolDetails.id ? `ID: ${schoolDetails.id}` : '--';
+                    document.getElementById('displaySchoolAddress').textContent = schoolDetails.address || '--';
+                    schoolCard.classList.remove('hidden');
+                } else {
+                    schoolCard.classList.add('hidden');
+                }
+            }
+            populatePrintFields();
+        }
+
+        function toggleCoordinatorFields() {
+            const classification = document.getElementById('inputClassification').value;
+            const jhsContainer = document.getElementById('jhsCoordContainer');
+            const elemContainer = document.getElementById('elemCoordContainer');
+            
+            if (classification === 'JHS') {
+                jhsContainer.classList.remove('hidden');
+                elemContainer.classList.add('hidden');
+            } else if (classification === 'Elementary' || classification === 'Integrated Elementary and JHS') {
+                elemContainer.classList.remove('hidden');
+                jhsContainer.classList.add('hidden');
+            }
+        }
+
+        function openSchoolModal() {
+            document.getElementById('inputSchoolName').value = schoolDetails.name || '';
+            document.getElementById('inputSchoolId').value = schoolDetails.id || '';
+            document.getElementById('inputSchoolAddress').value = schoolDetails.address || '';
+            document.getElementById('inputSchoolHead').value = schoolDetails.head || '';
+            document.getElementById('inputClassification').value = schoolDetails.classification || 'JHS';
+            document.getElementById('inputJhsCoordinator').value = schoolDetails.mathCoordinator || schoolDetails.jhsCoordinator || '';
+            document.getElementById('inputElemCoordinator').value = schoolDetails.elemCoordinator || '';
+            
+            toggleCoordinatorFields();
+            document.getElementById('schoolModal').classList.remove('hidden');
+        }
+
+        function closeSchoolModal() {
+            document.getElementById('schoolModal').classList.add('hidden');
+        }
+
+        function saveSchoolDetails(e) {
+            e.preventDefault();
+            schoolDetails.name = document.getElementById('inputSchoolName').value.trim();
+            schoolDetails.id = document.getElementById('inputSchoolId').value.trim();
+            schoolDetails.address = document.getElementById('inputSchoolAddress').value.trim();
+            schoolDetails.head = document.getElementById('inputSchoolHead').value.trim();
+            schoolDetails.classification = document.getElementById('inputClassification').value;
+            schoolDetails.mathCoordinator = document.getElementById('inputJhsCoordinator').value.trim();
+            schoolDetails.elemCoordinator = document.getElementById('inputElemCoordinator').value.trim();
+            
+            saveSchoolData();
+            updateSchoolDisplay();
+            
+            // Re-populate slicer if we are on dashboard
+            if (currentView === 'dashboard') {
+                populateGradeSlicerOptions();
+                updateDashboardStats(); // Refresh in case filter gets reset
+            }
+            
+            closeSchoolModal();
+            showCustomAlert("Success", "School details updated successfully!", "fa-circle-check text-emerald-600", "bg-emerald-100");
+        }
+
+        // --- Custom Dialog System (Replaces alert and confirm) ---
+        function showCustomAlert(title, message, iconClass = "fa-circle-exclamation text-brand-600", iconBg = "bg-brand-100") {
+            const modal = document.getElementById('messageBoxModal');
+            document.getElementById('messageBoxTitle').textContent = title;
+            document.getElementById('messageBoxMessage').textContent = message;
+            
+            const iconContainer = document.getElementById('messageBoxIconContainer');
+            iconContainer.className = `mx-auto flex items-center justify-center h-12 w-12 rounded-full ${iconBg} mb-4`;
+            document.getElementById('messageBoxIcon').className = `fa-solid ${iconClass} text-xl`;
+
+            const btnContainer = document.getElementById('messageBoxButtons');
+            btnContainer.innerHTML = `
+                <button onclick="closeCustomDialog()" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium text-xs shadow transition">
+                    OK
+                </button>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function showCustomConfirm(title, message, onConfirm) {
+            const modal = document.getElementById('messageBoxModal');
+            document.getElementById('messageBoxTitle').textContent = title;
+            document.getElementById('messageBoxMessage').textContent = message;
+
+            const iconContainer = document.getElementById('messageBoxIconContainer');
+            iconContainer.className = `mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-rose-100 mb-4`;
+            document.getElementById('messageBoxIcon').className = `fa-solid fa-triangle-exclamation text-rose-600 text-xl`;
+
+            const btnContainer = document.getElementById('messageBoxButtons');
+            btnContainer.innerHTML = `
+                <button onclick="closeCustomDialog()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-50 transition">
+                    Cancel
+                </button>
+                <button id="confirmDialogActionBtn" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-medium shadow transition">
+                    Confirm
+                </button>
+            `;
+            
+            document.getElementById('confirmDialogActionBtn').onclick = () => {
+                closeCustomDialog();
+                onConfirm();
+            };
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeCustomDialog() {
+            document.getElementById('messageBoxModal').classList.add('hidden');
+        }
+
+        // --- Main Navigation Controls ---
+        function toggleMainView(view) {
+            currentView = view;
+            const planView = document.getElementById('imipDocumentView');
+            const dashView = document.getElementById('dashboardView');
+            const navBtnDashboard = document.getElementById('navBtnDashboard');
+            const navBtnPlan = document.getElementById('navBtnPlan');
+            const downloadMenuContainer = document.getElementById('downloadMenuContainer');
+            const printBtnText = document.getElementById('printBtnText');
+            const globalCard = document.getElementById('globalSchoolCard');
+
+            if (view === 'dashboard') {
+                planView.classList.add('hidden');
+                dashView.classList.remove('hidden');
+
+                if (downloadMenuContainer) downloadMenuContainer.classList.add('opacity-50', 'pointer-events-none');
+                if (printBtnText) printBtnText.textContent = 'Print Dash';
+                if (globalCard) globalCard.classList.remove('print:hidden', 'no-print');
+
+                navBtnDashboard.className = "px-3 py-1.5 text-xs font-medium rounded-lg text-white bg-brand-600 shadow-sm transition flex items-center gap-1.5";
+                navBtnPlan.className = "px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition flex items-center gap-1.5";
+
+                populateGradeSlicerOptions();
+                updateDashboardStats();
+            } else {
+                dashView.classList.add('hidden');
+                planView.classList.remove('hidden');
+
+                if (downloadMenuContainer) downloadMenuContainer.classList.remove('opacity-50', 'pointer-events-none');
+                if (printBtnText) printBtnText.textContent = 'Print Plan';
+                if (globalCard) globalCard.classList.add('print:hidden', 'no-print');
+
+                navBtnPlan.className = "px-3 py-1.5 text-xs font-medium rounded-lg text-white bg-brand-600 shadow-sm transition flex items-center gap-1.5";
+                navBtnDashboard.className = "px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition flex items-center gap-1.5";
+            }
+        }
+
+        // --- Render Learners List ---
+        function renderLearnerList(filterText = '') {
+            const container = document.getElementById('learnerListContainer');
+            container.innerHTML = '';
+
+            const filtered = learners.filter(l => 
+                l.name.toLowerCase().includes(filterText.toLowerCase()) ||
+                l.gradeLevel.toLowerCase().includes(filterText.toLowerCase()) ||
+                (l.section && l.section.toLowerCase().includes(filterText.toLowerCase()))
+            );
+
+            // Custom Sorting Logic
+            const gradeOrder = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10'];
+            
+            filtered.sort((a, b) => {
+                // 1. Sort by Grade Level
+                const indexA = gradeOrder.indexOf(a.gradeLevel);
+                const indexB = gradeOrder.indexOf(b.gradeLevel);
+                const validIndexA = indexA !== -1 ? indexA : 999;
+                const validIndexB = indexB !== -1 ? indexB : 999;
+
+                if (validIndexA !== validIndexB) {
+                    return validIndexA - validIndexB;
+                }
+
+                // 2. Sort by Last Name, then First Name (Format: LAST NAME, FIRST NAME MI.)
+                const parseName = (name) => {
+                    const parts = name.split(',');
+                    return {
+                        last: parts[0] ? parts[0].trim().toLowerCase() : name.trim().toLowerCase(),
+                        first: parts[1] ? parts[1].trim().toLowerCase() : ''
+                    };
+                };
+
+                const nameA = parseName(a.name);
+                const nameB = parseName(b.name);
+
+                if (nameA.last !== nameB.last) {
+                    return nameA.last.localeCompare(nameB.last);
+                }
+                return nameA.first.localeCompare(nameB.first);
+            });
+
+            document.getElementById('learnerCount').textContent = learners.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 text-slate-400 text-xs font-semibold">
+                        <i class="fa-solid fa-user-slash text-2xl mb-1 block"></i>
+                        No learners found.
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(learner => {
+                const isActive = learner.id === activeLearnerId;
+                const btn = document.createElement('button');
+                btn.onclick = () => selectLearner(learner.id);
+                btn.className = `w-full text-left p-3 rounded-2xl transition border-2 text-xs flex flex-col gap-1.5 ${
+                    isActive 
+                        ? 'bg-sky-50 border-cyan-500 shadow-md' 
+                        : 'bg-white hover:bg-slate-50 border-slate-200'
+                }`;
+
+                let statusBadge = '';
+                if (learner.status === 'Mastered') {
+                    statusBadge = '<span class="bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded-lg font-black"><i class="fa-solid fa-check text-[9px]"></i> Mastered</span>';
+                } else if (learner.status === 'Needs Review') {
+                    statusBadge = '<span class="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-lg font-black"><i class="fa-solid fa-pause text-[9px]"></i> Review</span>';
+                } else {
+                    statusBadge = '<span class="bg-sunnyyellow text-slate-900 text-[10px] px-2 py-0.5 rounded-lg font-black"><i class="fa-solid fa-spinner text-[9px]"></i> Ongoing</span>';
+                }
+
+                btn.innerHTML = `
+                    <div class="flex justify-between items-center w-full">
+                        <span class="font-extrabold text-slate-800 truncate">${escapeHTML(learner.name)}</span>
+                        ${statusBadge}
+                    </div>
+                    <div class="flex justify-between text-[11px] text-slate-500 font-semibold w-full">
+                        <span>${escapeHTML(learner.gradeLevel)} - ${escapeHTML(learner.section || 'N/A')}</span>
+                        <span class="text-cyan-700 font-bold">${learner.domainGaps ? learner.domainGaps.length : 0} Worksheets</span>
+                    </div>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function filterLearners() {
+            const query = document.getElementById('searchInput').value;
+            renderLearnerList(query);
+        }
+
+        function selectLearner(learnerId) {
+            activeLearnerId = learnerId;
+            renderLearnerList(document.getElementById('searchInput').value);
+            renderLearnerPlan();
+            toggleMainView('plan');
+        }
+
+        // --- Render Selected Learner IMIP Plan ---
+        function renderLearnerPlan() {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            const gapsTbody = document.getElementById('domainGapsTbody');
+            const sessionLogsList = document.getElementById('sessionLogsList');
+
+            populatePrintFields();
+
+            if (!learner) {
+                document.getElementById('viewLearnerName').textContent = "Select a Learner";
+                document.getElementById('viewGradeLevel').textContent = "Grade Level: --";
+                document.getElementById('viewTutorName').textContent = "--";
+                document.getElementById('viewGradeLevelDetail').textContent = "--";
+                document.getElementById('viewSectionDetail').textContent = "--";
+                document.getElementById('viewWorksheetCount').textContent = "0";
+                document.getElementById('viewStatusBadge').textContent = "Select Learner";
+                document.getElementById('viewStatusBadge').className = "text-xs px-3 py-1 rounded-full font-extrabold bg-slate-100 text-slate-600";
+                
+                gapsTbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-400 font-semibold">Please select a learner from the sidebar or create a new plan.</td></tr>';
+                sessionLogsList.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs font-semibold">No learner selected.</div>';
+                return;
+            }
+
+            // Student Header Details
+            document.getElementById('viewLearnerName').textContent = learner.name;
+            document.getElementById('viewGradeLevel').textContent = `${learner.gradeLevel} - Section ${learner.section || 'N/A'}`;
+            document.getElementById('viewTutorName').textContent = learner.tutorName || '--';
+            document.getElementById('viewGradeLevelDetail').textContent = learner.gradeLevel;
+            document.getElementById('viewSectionDetail').textContent = learner.section || '--';
+            document.getElementById('viewWorksheetCount').textContent = learner.domainGaps ? learner.domainGaps.length : 0;
+
+            const badge = document.getElementById('viewStatusBadge');
+            if (learner.status === 'Mastered') {
+                badge.textContent = 'Mastered / Completed';
+                badge.className = 'text-xs px-3 py-1 rounded-full font-black bg-emerald-500 text-white shadow-sm';
+            } else if (learner.status === 'Needs Review') {
+                badge.textContent = 'Needs Review';
+                badge.className = 'text-xs px-3 py-1 rounded-full font-black bg-rose-500 text-white shadow-sm';
+            } else {
+                badge.textContent = 'Ongoing Intervention';
+                badge.className = 'text-xs px-3 py-1 rounded-full font-black bg-sunnyyellow text-slate-900 shadow-sm';
+            }
+
+            // Gaps & Competencies Table
+            gapsTbody.innerHTML = '';
+            if (!learner.domainGaps || learner.domainGaps.length === 0) {
+                gapsTbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-400 font-semibold">No competency gaps or worksheets logged yet. Click "Add Entry / Worksheet" to start.</td></tr>';
+            } else {
+                const db = getDatabaseForGrade(learner.gradeLevel);
+                learner.domainGaps.sort((a, b) => a.week - b.week).forEach((gap, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50/80 transition font-medium text-slate-700";
+                    
+                    let topicTitle = gap.domain;
+                    if (gap.worksheetPreset && db[gap.worksheetPreset]) {
+                        topicTitle = `Worksheet ${gap.worksheetPreset}: ${db[gap.worksheetPreset].topic}`;
+                    }
+
+                    tr.innerHTML = `
+                        <td class="p-3 font-black text-center text-cyan-600 bg-sky-50/50">W${gap.week}</td>
+                        <td class="p-3">
+                            <span class="font-extrabold text-slate-800 block">${escapeHTML(topicTitle)}</span>
+                            <span class="text-[10px] text-cyan-700 uppercase font-black tracking-wider">${escapeHTML(gap.domain)}</span>
+                        </td>
+                        <td class="p-3">${escapeHTML(gap.identifiedGaps)}</td>
+                        <td class="p-3">${escapeHTML(gap.targetSkills)}</td>
+                        <td class="p-3 text-[11px] leading-relaxed text-slate-600 font-normal">${escapeHTML(gap.tutorNotes || '--')}</td>
+                        <td class="p-3 text-center no-print whitespace-nowrap">
+                            <button onclick="editGapEntry(${idx})" class="text-slate-400 hover:text-cyan-600 p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteGapEntry(${idx})" class="text-slate-400 hover:text-rose-600 p-1 ml-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    `;
+                    gapsTbody.appendChild(tr);
+                });
+            }
+
+            // Session History List
+            sessionLogsList.innerHTML = '';
+            if (!learner.sessions || learner.sessions.length === 0) {
+                sessionLogsList.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs font-semibold">No intervention sessions logged yet.</div>';
+            } else {
+                learner.sessions.sort((a, b) => a.week - b.week).forEach((sess, idx) => {
+                    const card = document.createElement('div');
+                    card.className = "p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-cyan-400 transition space-y-2 shadow-sm";
+                    
+                    let wsRangeStr = `Worksheet ${sess.startWs} to Worksheet ${sess.endWs}`;
+                    if (sess.startWs === sess.endWs) {
+                        wsRangeStr = `Worksheet ${sess.startWs}`;
+                    }
+
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-navycard text-white font-black text-xs px-3 py-1 rounded-lg">Week ${sess.week}</span>
+                                <span class="font-extrabold text-slate-800 text-xs">${wsRangeStr}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs text-slate-600 font-bold bg-slate-100 px-2.5 py-1 rounded-lg"><i class="fa-regular fa-clock text-cyan-600"></i> ${sess.duration} Mins</span>
+                                <div class="no-print flex items-center">
+                                    <button onclick="editSessionLog(${idx})" class="text-slate-400 hover:text-cyan-600 p-1 text-xs"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteSessionLog(${idx})" class="text-slate-400 hover:text-rose-600 p-1 text-xs ml-1"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-600 font-bold">
+                            <i class="fa-regular fa-calendar-days text-rose-500 mr-1.5"></i>
+                            ${formatDateToLong(sess.startDate)} to ${formatDateToLong(sess.endDate)}
+                        </div>
+                        ${sess.notes ? `<p class="text-xs text-slate-700 font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-200 mt-1">${escapeHTML(sess.notes)}</p>` : ''}
+                    `;
+                    sessionLogsList.appendChild(card);
+                });
+            }
+        }
+
+        // --- Learner CRUD ---
+        function populateLearnerGradeDropdown() {
+            const select = document.getElementById('inputGradeLevel');
+            const currentVal = select.value;
+            select.innerHTML = '';
+            
+            const validGrades = getGradesByClassification();
+            validGrades.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                select.appendChild(opt);
+            });
+            
+            if (currentVal && validGrades.includes(currentVal)) {
+                select.value = currentVal;
+            }
+        }
+
+        function openNewPlanModal() {
+            document.getElementById('learnerModalTitle').textContent = "Create Learner Intervention Plan";
+            document.getElementById('editingLearnerId').value = "";
+            document.getElementById('learnerForm').reset();
+            populateLearnerGradeDropdown();
+            document.getElementById('learnerModal').classList.remove('hidden');
+        }
+
+        function editCurrentPlan() {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) return;
+
+            document.getElementById('learnerModalTitle').textContent = "Edit Learner Profile Plan";
+            document.getElementById('editingLearnerId').value = learner.id;
+            document.getElementById('inputLearnerName').value = learner.name;
+            populateLearnerGradeDropdown();
+            document.getElementById('inputGradeLevel').value = learner.gradeLevel;
+            document.getElementById('inputSection').value = learner.section || '';
+            document.getElementById('inputTutorName').value = learner.tutorName;
+            document.getElementById('inputStatus').value = learner.status;
+
+            document.getElementById('learnerModal').classList.remove('hidden');
+        }
+
+        function closeLearnerModal() {
+            document.getElementById('learnerModal').classList.add('hidden');
+        }
+
+        function saveLearnerPlan(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editingLearnerId').value;
+            const name = document.getElementById('inputLearnerName').value.trim();
+            const gradeLevel = document.getElementById('inputGradeLevel').value;
+            const section = document.getElementById('inputSection').value.trim();
+            const tutorName = document.getElementById('inputTutorName').value.trim();
+            const status = document.getElementById('inputStatus').value;
+
+            if (editId) {
+                const learner = learners.find(l => l.id === editId);
+                if (learner) {
+                    learner.name = name;
+                    learner.gradeLevel = gradeLevel;
+                    learner.section = section;
+                    learner.tutorName = tutorName;
+                    learner.status = status;
+                }
+            } else {
+                const newLearner = {
+                    id: 'learner-' + Date.now(),
+                    name,
+                    gradeLevel,
+                    section,
+                    tutorName,
+                    status,
+                    domainGaps: [],
+                    sessions: []
+                };
+                learners.push(newLearner);
+                activeLearnerId = newLearner.id;
+            }
+
+            saveData();
+            closeLearnerModal();
+            renderLearnerList();
+            renderLearnerPlan();
+            toggleMainView('plan');
+            showCustomAlert("Success", "Learner profile saved successfully!", "fa-circle-check text-emerald-600", "bg-emerald-100");
+        }
+
+        function deleteCurrentPlan() {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) return;
+
+            showCustomConfirm(
+                "Delete Learner Plan",
+                `Are you sure you want to delete the intervention plan for ${learner.name}? This action cannot be undone.`,
+                () => {
+                    learners = learners.filter(l => l.id !== activeLearnerId);
+                    activeLearnerId = learners.length > 0 ? learners[0].id : null;
+                    saveData();
+                    renderLearnerList();
+                    renderLearnerPlan();
+                    showCustomAlert("Deleted", "Learner plan removed.", "fa-trash text-rose-600", "bg-rose-100");
+                }
+            );
+        }
+
+        // --- Domain Gap / Worksheet Presets ---
+        function getDatabaseForGrade(gradeLevel) {
+            if (gradeLevel === "Grade 9" || gradeLevel === "Grade 10") {
+                return ARAL_DATABASE;
+            } else if (gradeLevel === "Grade 7" || gradeLevel === "Grade 8") {
+                return G78_DATABASE;
+            }
+            return {};
+        }
+
+        function populateWorksheetPresets(gradeLevel) {
+            const select = document.getElementById('selectGapWorksheetPreset');
+            select.innerHTML = '<option value="">-- Custom Entry (No Worksheet Preset) --</option>';
+
+            const db = getDatabaseForGrade(gradeLevel);
+            const dbKeys = Object.keys(db);
+
+            if ((gradeLevel === "Grade 7" || gradeLevel === "Grade 8") && dbKeys.length === 0) {
+                select.disabled = true;
+                return;
+            } else if (gradeLevel !== "Grade 7" && gradeLevel !== "Grade 8" && gradeLevel !== "Grade 9" && gradeLevel !== "Grade 10") {
+                 select.disabled = true;
+                 return;
+            }
+
+            select.disabled = false;
+            
+            const sortedKeys = dbKeys.map(k => parseInt(k, 10)).sort((a, b) => a - b);
+
+            sortedKeys.forEach(i => {
+                const item = db[i];
+                if (item) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = `Worksheet ${i}: ${item.topic}`;
+                    select.appendChild(opt);
+                }
+            });
+        }
+
+        function handleWorksheetPresetChange() {
+            const val = document.getElementById('selectGapWorksheetPreset').value;
+            if (!val) return;
+
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) return;
+            
+            const db = getDatabaseForGrade(learner.gradeLevel);
+            const preset = db[val];
+            if (preset) {
+                document.getElementById('inputGapDomain').value = preset.domain;
+                document.getElementById('inputGapIdentified').value = preset.gap;
+                document.getElementById('inputGapTarget').value = preset.target;
+                document.getElementById('inputGapNotes').value = preset.notes;
+            }
+        }
+
+        function openAddGapModal() {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) {
+                showCustomAlert("No Learner Selected", "Please select a learner before adding a worksheet entry.");
+                return;
+            }
+
+            populateWorksheetPresets(learner.gradeLevel);
+
+            document.getElementById('gapModalTitle').textContent = "Add Domain Gap / Worksheet Entry";
+            document.getElementById('editingGapIndex').value = "-1";
+            document.getElementById('gapForm').reset();
+
+            document.getElementById('gapModal').classList.remove('hidden');
+        }
+
+        function editGapEntry(idx) {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner || !learner.domainGaps[idx]) return;
+
+            const gap = learner.domainGaps[idx];
+            populateWorksheetPresets(learner.gradeLevel);
+
+            document.getElementById('gapModalTitle').textContent = "Edit Domain Gap / Worksheet Entry";
+            document.getElementById('editingGapIndex').value = idx;
+            document.getElementById('selectGapWorksheetPreset').value = gap.worksheetPreset || '';
+            document.getElementById('inputGapDomain').value = gap.domain;
+            document.getElementById('inputGapIdentified').value = gap.identifiedGaps;
+            document.getElementById('inputGapTarget').value = gap.targetSkills;
+            document.getElementById('inputGapNotes').value = gap.tutorNotes || '';
+
+            document.getElementById('gapModal').classList.remove('hidden');
+        }
+
+        function closeGapModal() {
+            document.getElementById('gapModal').classList.add('hidden');
+        }
+
+        function saveGapEntry(e) {
+            e.preventDefault();
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) return;
+
+            const idx = parseInt(document.getElementById('editingGapIndex').value, 10);
+            const presetVal = document.getElementById('selectGapWorksheetPreset').value;
+
+            let nextWeek = 1;
+            if (learner.domainGaps.length > 0 && idx === -1) {
+                nextWeek = Math.max(...learner.domainGaps.map(g => g.week)) + 1;
+            }
+
+            const entryData = {
+                week: idx >= 0 ? learner.domainGaps[idx].week : nextWeek,
+                worksheetPreset: presetVal ? parseInt(presetVal, 10) : null,
+                domain: document.getElementById('inputGapDomain').value,
+                identifiedGaps: document.getElementById('inputGapIdentified').value.trim(),
+                targetSkills: document.getElementById('inputGapTarget').value.trim(),
+                tutorNotes: document.getElementById('inputGapNotes').value.trim()
+            };
+
+            if (idx >= 0) {
+                learner.domainGaps[idx] = entryData;
+            } else {
+                learner.domainGaps.push(entryData);
+            }
+
+            saveData();
+            closeGapModal();
+            renderLearnerPlan();
+            showCustomAlert("Saved", "Domain gap entry updated successfully.", "fa-circle-check text-emerald-600", "bg-emerald-100");
+        }
+
+        function deleteGapEntry(idx) {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner || !learner.domainGaps[idx]) return;
+
+            showCustomConfirm(
+                "Delete Entry",
+                "Are you sure you want to remove this worksheet entry?",
+                () => {
+                    learner.domainGaps.splice(idx, 1);
+                    saveData();
+                    renderLearnerPlan();
+                }
+            );
+        }
+
+        // --- Session Log CRUD ---
+        function populateSessionWorksheetDropdowns() {
+            const startSelect = document.getElementById('inputSessionStartWs');
+            const endSelect = document.getElementById('inputSessionEndWs');
+
+            startSelect.innerHTML = '';
+            endSelect.innerHTML = '';
+
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) return;
+            
+            const db = getDatabaseForGrade(learner.gradeLevel);
+            const maxWs = Object.keys(db).length > 0 ? Math.max(...Object.keys(db).map(k => parseInt(k, 10))) : 67;
+
+            const idx = parseInt(document.getElementById('editingSessionIndex').value || "-1", 10);
+            let editingWeek = Infinity;
+            if (idx >= 0 && learner.sessions && learner.sessions[idx]) {
+                editingWeek = learner.sessions[idx].week;
+            }
+
+            const priorSessions = (learner.sessions || []).filter((s, i) => i !== idx && s.week <= editingWeek);
+            
+            let currentWs = 0;
+            let prevEndWs = 0;
+
+            if (learner.status === 'Mastered' && idx === -1) {
+                let highestWs = 0;
+                if (learner.domainGaps && learner.domainGaps.length > 0) {
+                    highestWs = Math.max(...learner.domainGaps.map(g => g.worksheetPreset || 0));
+                }
+                if (priorSessions.length > 0) {
+                    highestWs = Math.max(highestWs, ...priorSessions.map(s => s.endWs || 0));
+                }
+                prevEndWs = highestWs;
+            } else {
+                if (priorSessions.length > 0) {
+                    const sortedSessions = [...priorSessions].sort((a, b) => b.week - a.week);
+                    currentWs = sortedSessions[0].endWs || sortedSessions[0].startWs || 0;
+                } else if (learner.domainGaps && learner.domainGaps.length > 0) {
+                    const priorGaps = learner.domainGaps.filter(g => g.week <= editingWeek);
+                    if (priorGaps.length > 0) {
+                        const sortedGaps = [...priorGaps].sort((a, b) => a.week - b.week);
+                        currentWs = sortedGaps[sortedGaps.length - 1].worksheetPreset || 0;
+                    }
+                }
+                
+                prevEndWs = currentWs;
+            }
+
+            let allowedStarts = new Set();
+            if (prevEndWs > 0) {
+                allowedStarts.add(prevEndWs);
+                if (prevEndWs < maxWs) allowedStarts.add(prevEndWs + 1);
+            } else {
+                allowedStarts.add(1);
+            }
+            
+            // If editing, ensure the previously saved starting worksheet is still available
+            if (idx >= 0 && learner.sessions && learner.sessions[idx]) {
+                 allowedStarts.add(learner.sessions[idx].startWs);
+            }
+            
+            let startOptions = Array.from(allowedStarts).sort((a, b) => a - b);
+
+            startOptions.forEach(wsNum => {
+                const opt = document.createElement('option');
+                opt.value = wsNum;
+                opt.textContent = `Worksheet ${wsNum}`;
+                startSelect.appendChild(opt);
+            });
+
+            // Trigger end select population dynamically
+            handleStartWsChange(idx >= 0 ? learner.sessions[idx].endWs : null);
+        }
+
+        function handleStartWsChange(presetEndWs = null) {
+            const startSelect = document.getElementById('inputSessionStartWs');
+            const endSelect = document.getElementById('inputSessionEndWs');
+            
+            const startVal = parseInt(startSelect.value, 10) || 1;
+            
+            // If called from HTML onchange, presetEndWs will be the Event object.
+            let currentEndVal = parseInt(endSelect.value, 10);
+            if (typeof presetEndWs === 'number') {
+                currentEndVal = presetEndWs;
+            }
+
+            endSelect.innerHTML = '';
+            
+            const learner = learners.find(l => l.id === activeLearnerId);
+            const db = learner ? getDatabaseForGrade(learner.gradeLevel) : {};
+            const maxWs = Object.keys(db).length > 0 ? Math.max(...Object.keys(db).map(k => parseInt(k, 10))) : 67;
+            
+            for (let i = startVal; i <= maxWs; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `Worksheet ${i}`;
+                endSelect.appendChild(opt);
+            }
+
+            if (currentEndVal && currentEndVal >= startVal && currentEndVal <= maxWs) {
+                endSelect.value = currentEndVal;
+            } else {
+                endSelect.value = startVal;
+            }
+        }
+
+        function openAddSessionModal() {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) {
+                showCustomAlert("No Learner Selected", "Please select a learner before logging a session.");
+                return;
+            }
+
+            document.getElementById('editingSessionIndex').value = "-1";
+            populateSessionWorksheetDropdowns();
+
+            const db = getDatabaseForGrade(learner.gradeLevel);
+
+            document.getElementById('sessionModalTitle').textContent = "Log Intervention Session";
+            document.getElementById('sessionForm').reset();
+
+            // Next week logic
+            let nextWeek = 1;
+            let lastEndDate = null;
+
+            if (learner.sessions && learner.sessions.length > 0) {
+                const sorted = [...learner.sessions].sort((a, b) => a.week - b.week);
+                const lastSess = sorted[sorted.length - 1];
+                nextWeek = lastSess.week + 1;
+                lastEndDate = lastSess.endDate;
+            }
+
+            const targetWeek = Math.min(nextWeek, 10);
+            const weekSelect = document.getElementById('inputSessionWeek');
+            weekSelect.innerHTML = `<option value="${targetWeek}">Week ${targetWeek}</option>`;
+            weekSelect.value = targetWeek;
+
+            // Date Locking Constraints
+            const startDateInput = document.getElementById('inputSessionStartDate');
+            const endDateInput = document.getElementById('inputSessionEndDate');
+
+            if (lastEndDate) {
+                const parts = lastEndDate.split('-');
+                const minDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                
+                // Calculate days to the next Monday
+                let dayOfWeek = minDate.getDay();
+                let daysToNextMonday = (1 - dayOfWeek + 7) % 7;
+                if (daysToNextMonday === 0) daysToNextMonday = 7; // Strictly advance to the next week's Monday
+                
+                minDate.setDate(minDate.getDate() + daysToNextMonday);
+
+                // Format safely to YYYY-MM-DD in local time
+                const minYear = minDate.getFullYear();
+                const minMonth = String(minDate.getMonth() + 1).padStart(2, '0');
+                const minDay = String(minDate.getDate()).padStart(2, '0');
+                const minDateStr = `${minYear}-${minMonth}-${minDay}`;
+
+                startDateInput.min = minDateStr;
+                endDateInput.min = minDateStr;
+
+                startDateInput.value = minDateStr;
+                endDateInput.value = minDateStr;
+            } else {
+                startDateInput.removeAttribute('min');
+                endDateInput.removeAttribute('min');
+                const todayStr = new Date().toISOString().split('T')[0];
+                startDateInput.value = todayStr;
+                endDateInput.value = todayStr;
+            }
+
+            document.getElementById('sessionModal').classList.remove('hidden');
+        }
+
+        function handleSessionStartDateChange() {
+            const startDateVal = document.getElementById('inputSessionStartDate').value;
+            const endDateInput = document.getElementById('inputSessionEndDate');
+            if (startDateVal) {
+                endDateInput.min = startDateVal;
+                if (endDateInput.value < startDateVal) {
+                    endDateInput.value = startDateVal;
+                }
+            }
+        }
+
+        function editSessionLog(idx) {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner || !learner.sessions[idx]) return;
+
+            document.getElementById('editingSessionIndex').value = idx;
+            populateSessionWorksheetDropdowns();
+
+            // Remove date minimum constraints when editing to allow backward corrections
+            document.getElementById('inputSessionStartDate').removeAttribute('min');
+            document.getElementById('inputSessionEndDate').removeAttribute('min');
+
+            const sess = learner.sessions[idx];
+            
+            const weekSelect = document.getElementById('inputSessionWeek');
+            weekSelect.innerHTML = `<option value="${sess.week}">Week ${sess.week}</option>`;
+
+            document.getElementById('sessionModalTitle').textContent = "Edit Intervention Session";
+            document.getElementById('inputSessionWeek').value = sess.week;
+            document.getElementById('inputSessionDuration').value = sess.duration;
+            document.getElementById('inputSessionStartDate').value = sess.startDate;
+            document.getElementById('inputSessionEndDate').value = sess.endDate;
+            document.getElementById('inputSessionStartWs').value = sess.startWs;
+            document.getElementById('inputSessionEndWs').value = sess.endWs;
+            document.getElementById('inputSessionNotes').value = sess.notes || '';
+
+            document.getElementById('sessionModal').classList.remove('hidden');
+        }
+
+        function closeSessionModal() {
+            document.getElementById('sessionModal').classList.add('hidden');
+        }
+
+        function saveSessionLog(e) {
+            e.preventDefault();
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) return;
+
+            const idx = parseInt(document.getElementById('editingSessionIndex').value, 10);
+            const week = parseInt(document.getElementById('inputSessionWeek').value, 10);
+            const duration = parseInt(document.getElementById('inputSessionDuration').value, 10);
+            const startDate = document.getElementById('inputSessionStartDate').value;
+            const endDate = document.getElementById('inputSessionEndDate').value;
+            const startWs = parseInt(document.getElementById('inputSessionStartWs').value, 10);
+            const endWs = parseInt(document.getElementById('inputSessionEndWs').value, 10);
+            const notes = document.getElementById('inputSessionNotes').value.trim();
+
+            const sessionObj = {
+                week,
+                duration,
+                startDate,
+                endDate,
+                startWs,
+                endWs,
+                notes
+            };
+
+            if (!learner.sessions) learner.sessions = [];
+
+            if (idx >= 0) {
+                learner.sessions[idx] = sessionObj;
+            } else {
+                learner.sessions.push(sessionObj);
+            }
+
+            // Auto-populate ARAL curriculum data for Grade 9/10, or imported G7/8
+            const db = getDatabaseForGrade(learner.gradeLevel);
+            if (Object.keys(db).length > 0) {
+                if (!learner.domainGaps) learner.domainGaps = [];
+
+                for (let w = startWs; w <= endWs; w++) {
+                    const preset = db[w];
+                    if (preset) {
+                        let existingGap = learner.domainGaps.find(g => g.worksheetPreset === w);
+                        if (!existingGap) {
+                            learner.domainGaps.push({
+                                week: week,
+                                worksheetPreset: w,
+                                domain: preset.domain,
+                                identifiedGaps: preset.gap,
+                                targetSkills: preset.target,
+                                tutorNotes: notes ? `${preset.notes}\n${notes}` : preset.notes
+                            });
+                        } else if (notes) {
+                            existingGap.tutorNotes = `${existingGap.tutorNotes}\n${notes}`;
+                        }
+                    }
+                }
+            }
+
+            saveData();
+            closeSessionModal();
+            renderLearnerPlan();
+            showCustomAlert("Session Saved", "Intervention session recorded.", "fa-circle-check text-emerald-600", "bg-emerald-100");
+        }
+
+        function deleteSessionLog(idx) {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner || !learner.sessions[idx]) return;
+
+            showCustomConfirm(
+                "Delete Session Log",
+                "Are you sure you want to remove this intervention session?",
+                () => {
+                    learner.sessions.splice(idx, 1);
+                    saveData();
+                    renderLearnerPlan();
+                }
+            );
+        }
+
+        // --- Print & PDF Modules ---
+        function toggleDownloadMenu(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('downloadDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function closeDownloadMenu() {
+            document.getElementById('downloadDropdown').classList.add('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('downloadMenuContainer');
+            if (container && !container.contains(e.target)) {
+                closeDownloadMenu();
+            }
+        });
+
+        function populatePrintFields() {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            
+            // Header Populating
+            document.getElementById('printSchoolName').textContent = schoolDetails.name || '';
+            document.getElementById('printSchoolId').textContent = schoolDetails.id ? `ID: ${schoolDetails.id}` : '';
+            document.getElementById('printSchoolAddress').textContent = schoolDetails.address || '';
+
+            if (!learner) return;
+
+            // Footer / Signatures Populating
+            document.getElementById('printTutorName').textContent = (learner.tutorName || '').toUpperCase();
+            
+            let reviewerName = "";
+            let reviewerTitle = "";
+            if (schoolDetails.classification === 'JHS') {
+                reviewerName = (schoolDetails.mathCoordinator || schoolDetails.jhsCoordinator || '').toUpperCase();
+                reviewerTitle = "Mathematics Head Teacher/Coordinator";
+            } else {
+                reviewerName = (schoolDetails.elemCoordinator || '').toUpperCase();
+                reviewerTitle = "ARAL Math Coordinator";
+            }
+            
+            document.getElementById('printReviewerName').textContent = reviewerName;
+            document.getElementById('printReviewerTitle').textContent = reviewerTitle;
+            document.getElementById('printSchoolHead').textContent = (schoolDetails.head || '').toUpperCase();
+        }
+
+        function printIMIPPlan() {
+            if (currentView === 'plan' && !activeLearnerId) {
+                showCustomAlert("No Learner Selected", "Please select a learner from the list before attempting to print.");
+                return;
+            }
+            
+            populatePrintFields();
+            setTimeout(() => {
+                window.print();
+            }, 200);
+        }
+
+        function downloadIMIPasPDF() {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) {
+                showCustomAlert("No Learner Selected", "Please select a learner to download their IMIP PDF.");
+                return;
+            }
+
+            toggleMainView('plan');
+            populatePrintFields();
+            
+            const element = document.getElementById('imipDocumentView');
+            const printHeader = document.getElementById('printDocumentHeader');
+            const printFooter = document.getElementById('printDocumentFooter');
+
+            // Force display for HTML2PDF execution
+            printHeader.classList.remove('hidden', 'print:block');
+            printHeader.classList.add('block');
+            printFooter.classList.remove('hidden', 'print:grid');
+            printFooter.classList.add('grid');
+
+            const opt = {
+                margin:       0.5,
+                filename:     `IMIP_${learner.name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: [8.5, 13], orientation: 'portrait' } 
+            };
+
+            // Hide action elements during PDF generation
+            document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+                // Restore classes
+                printHeader.classList.remove('block');
+                printHeader.classList.add('hidden', 'print:block');
+                printFooter.classList.remove('grid');
+                printFooter.classList.add('hidden', 'print:grid');
+            }).catch(err => {
+                console.error("PDF generation failed", err);
+                document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+                // Restore classes
+                printHeader.classList.remove('block');
+                printHeader.classList.add('hidden', 'print:block');
+                printFooter.classList.remove('grid');
+                printFooter.classList.add('hidden', 'print:grid');
+                showCustomAlert("Export Error", "Failed to generate PDF document.");
+            });
+        }
+
+        // --- CSV Download Logic ---
+        function escapeCSV(str) {
+            if (str === null || str === undefined) return '""';
+            const strVal = String(str);
+            if (strVal.includes(',') || strVal.includes('"') || strVal.includes('\n')) {
+                return `"${strVal.replace(/"/g, '""')}"`;
+            }
+            return strVal;
+        }
+
+        function downloadIMIPasCSV() {
+            const learner = learners.find(l => l.id === activeLearnerId);
+            if (!learner) {
+                showCustomAlert("No Learner Selected", "Please select a learner to download their IMIP CSV.");
+                return;
+            }
+
+            let csvContent = "";
+            
+            // Row 1: School Name only
+            csvContent += `${escapeCSV(schoolDetails.name || '')}\n`;
+
+            // Row 2: Cell 1 = School ID, Cell 2 = School Address
+            csvContent += `${escapeCSV(schoolDetails.id || '')},${escapeCSV(schoolDetails.address || '')}\n`;
+
+            // Blank row after address
+            csvContent += `\n`;
+
+            // Section Title and exactly ONE Blank Row
+            csvContent += `INDIVIDUAL MATHEMATICS INTERVENTION PLAN (IMIP)\n\n`;
+
+            // Learner Details Table
+            csvContent += `Learner Name,,Grade & ARAL Math Section,,Status\n`;
+            csvContent += `${escapeCSV(learner.name)},,${escapeCSV(learner.gradeLevel + ' - ' + (learner.section || 'N/A'))},,${escapeCSV(learner.status)}\n\n`;
+
+            // Competency Gaps & Target Skills Table
+            csvContent += `Week,Worksheet / Domain,Identified Gaps,Target Skills / Competencies,Tutor Notes / Observations\n`;
+            
+            if (learner.domainGaps && learner.domainGaps.length > 0) {
+                const db = getDatabaseForGrade(learner.gradeLevel);
+                const sortedGaps = [...learner.domainGaps].sort((a, b) => a.week - b.week);
+                sortedGaps.forEach(gap => {
+                    let topicTitle = gap.domain;
+                    if (gap.worksheetPreset && db[gap.worksheetPreset]) {
+                        topicTitle = `Worksheet ${gap.worksheetPreset}: ${db[gap.worksheetPreset].topic}`;
+                    }
+                    csvContent += `${gap.week},${escapeCSV(topicTitle)},${escapeCSV(gap.identifiedGaps)},${escapeCSV(gap.targetSkills)},${escapeCSV(gap.tutorNotes || '')}\n`;
+                });
+            } else {
+                csvContent += `-,No gaps logged,-,-,-\n`;
+            }
+
+            csvContent += `\n`;
+
+            // Sign-off Block
+            const tutorNameCaps = (learner.tutorName || '').toUpperCase();
+            
+            let reviewerName = "";
+            let reviewerTitle = "";
+            if (schoolDetails.classification === 'JHS') {
+                reviewerName = (schoolDetails.mathCoordinator || '').toUpperCase();
+                reviewerTitle = "Mathematics Head Teacher/Coordinator";
+            } else {
+                reviewerName = (schoolDetails.elemCoordinator || '').toUpperCase();
+                reviewerTitle = "ARAL Math Coordinator";
+            }
+            
+            const schoolHeadCaps = (schoolDetails.head || '').toUpperCase();
+
+            csvContent += `Prepared by:\n\n`;
+            csvContent += `${escapeCSV(tutorNameCaps)}\n`;
+            csvContent += `Tutor\n\n`;
+
+            csvContent += `Reviewed by:\n\n`;
+            csvContent += `${escapeCSV(reviewerName)}\n`;
+            csvContent += `${escapeCSV(reviewerTitle)}\n\n`;
+
+            csvContent += `Noted by:\n\n`;
+            csvContent += `${escapeCSV(schoolHeadCaps)}\n`;
+            csvContent += `School Head\n`;
+
+            // Trigger Download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `IMIP_${learner.name.replace(/[^a-zA-Z0-9]/g, '_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- Analytics Dashboard Logic ---
+        function populateGradeSlicerOptions() {
+            const slicer = document.getElementById('gradeLevelSlicer');
+            const currentVal = slicer.value;
+            slicer.innerHTML = '<option value="ALL">All Grade Levels</option>';
+            
+            const validGrades = getGradesByClassification();
+            validGrades.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                slicer.appendChild(opt);
+            });
+            
+            if (currentVal && validGrades.includes(currentVal)) {
+                slicer.value = currentVal;
+            }
+        }
+
+        function updateDashboardStats() {
+            const gradeFilter = document.getElementById('gradeLevelSlicer').value;
+            let filteredLearners = learners;
+
+            if (gradeFilter !== 'ALL') {
+                filteredLearners = learners.filter(l => l.gradeLevel === gradeFilter);
+            }
+
+            // Top Metrics
+            const totalLearners = filteredLearners.length;
+            const activeInterventions = filteredLearners.filter(l => l.status === 'Ongoing').length;
+            let masteredLearners = 0;
+            let totalSessions = 0;
+            let domainCounts = {
+                "Number and Algebra": 0,
+                "Measurement and Geometry": 0,
+                "Data and Probability": 0
+            };
+
+            filteredLearners.forEach(l => {
+                if (l.domainGaps) {
+                    masteredLearners += l.domainGaps.length;
+                    l.domainGaps.forEach(g => {
+                        if (domainCounts[g.domain] !== undefined) {
+                            domainCounts[g.domain]++;
+                        }
+                    });
+                }
+                if (l.sessions) {
+                    totalSessions += l.sessions.length;
+                }
+            });
+
+            document.getElementById('dashTotalLearners').textContent = totalLearners;
+            document.getElementById('dashActiveInterventions').textContent = activeInterventions;
+            document.getElementById('dashMasteredLearners').textContent = masteredLearners;
+            document.getElementById('dashTotalSessions').textContent = totalSessions;
+
+            // Render Charts
+            renderCharts(filteredLearners, domainCounts);
+        }
+
+        function renderCharts(filteredLearners, domainCounts) {
+            // Chart.js Default styling tweaks
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b'; // slate-500
+
+            // 1. Domain Gaps Bar Chart
+            const domainCtx = document.getElementById('domainChart');
+            if (domainChartInstance) domainChartInstance.destroy();
+
+            domainChartInstance = new Chart(domainCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Number & Algebra', 'Measurement & Geometry', 'Data & Probability'],
+                    datasets: [{
+                        label: 'Identified Gaps',
+                        data: [
+                            domainCounts["Number and Algebra"],
+                            domainCounts["Measurement and Geometry"],
+                            domainCounts["Data and Probability"]
+                        ],
+                        backgroundColor: ['#06b6d4', '#f59e0b', '#10b981'], // cyan-500, amber-500, emerald-500
+                        borderRadius: 8,
+                        barThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [4, 4], drawBorder: false } },
+                        x: { grid: { display: false, drawBorder: false }, ticks: { font: { weight: 'bold' } } }
+                    }
+                }
+            });
+
+            // 2. Proficiency Status Doughnut Chart
+            let statusCounts = { 'Ongoing': 0, 'Needs Review': 0, 'Mastered': 0 };
+            filteredLearners.forEach(l => {
+                if (statusCounts[l.status] !== undefined) {
+                    statusCounts[l.status]++;
+                }
+            });
+
+            const statusCtx = document.getElementById('statusChart');
+            if (statusChartInstance) statusChartInstance.destroy();
+
+            statusChartInstance = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ongoing', 'Needs Review', 'Mastered'],
+                    datasets: [{
+                        data: [statusCounts['Ongoing'], statusCounts['Needs Review'], statusCounts['Mastered']],
+                        backgroundColor: ['#fbbf24', '#f43f5e', '#10b981'], // amber-400, rose-500, emerald-500
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { weight: 'bold', size: 11 },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize App
+        window.onload = function() {
+            loadData();
+            renderLearnerList();
+            
+            if (learners.length > 0) {
+                activeLearnerId = learners[0].id;
+                renderLearnerPlan();
+            } else {
+                renderLearnerPlan(); 
+            }
+            
+            // Default landing page to Dashboard
+            toggleMainView('dashboard');
+        };
+    </script>
+</body>
+</html>
